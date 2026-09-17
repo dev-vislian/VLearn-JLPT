@@ -45,8 +45,5 @@ export const unitData = [
   { id: 'n5-v-94', character: '両親（りょうしん）', romaji: 'ryoushin', meaning: 'Orang tua', example: { sentence: '両親は田舎に住んでいます。', romaji: 'Ryoushin wa inaka ni sunde imasu.', meaning: 'Orang tua tinggal di pedesaan.' } },
   { id: 'n5-v-95', character: 'おじさん', romaji: 'ojisan', meaning: 'Paman', example: { sentence: 'おじさんは大阪に住んでいます。', romaji: 'Ojisan wa Oosaka ni sunde imasu.', meaning: 'Paman tinggal di Osaka.' } },
   { id: 'n5-v-96', character: 'おばさん', romaji: 'obasan', meaning: 'Bibi', example: { sentence: 'おばさんはケーキが上手に作れます。', romaji: 'Obasan wa keeki ga jouzu ni tsukuremasu.', meaning: 'Bibi pandai membuat kue.' } },
-  { id: 'n5-v-97', character: '先輩（せんぱい）', romaji: 'senpai', meaning: 'Senior', example: { sentence: '先輩にいろいろ教えてもらいました。', romaji: 'Senpai ni iroiro oshite moraimashita.', meaning: 'Saya banyak belajar dari senior.' } },
-  { id: 'n5-v-98', character: '後輩（こうはい）', romaji: 'kouhai', meaning: 'Junior', example: { sentence: '後輩を手伝ってあげてください。', romaji: 'Kouhai o tetsudatte agete kudasai.', meaning: 'Tolong bantu junior-nya.' } },
-  { id: 'n5-v-99', character: '大人（おとな）', romaji: 'otona', meaning: 'Orang dewasa', example: { sentence: '大人は責任があります。', romaji: 'Otona wa sekinin ga arimasu.', meaning: 'Orang dewasa punya tanggung jawab.' } },
-  { id: 'n5-v-100', character: '友人（ゆうじん）', romaji: 'yuujin', meaning: 'Teman (formal)', example: { sentence: '友人と一緒にお花見をしました。', romaji: 'Yuujin to issho ni ohanami o shimashita.', meaning: 'Saya melihat bunga bersama teman.' } }
+  { id: 'n5-v-97', character: '大人（おとな）', romaji: 'otona', meaning: 'Orang dewasa', example: { sentence: '大人は責任があります。', romaji: 'Otona wa sekinin ga arimasu.', meaning: 'Orang dewasa punya tanggung jawab.' } },
 ];
