@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
-import { BookOpen, BookMarked, Timer, Sparkles } from 'lucide-react'
+import { BarChart3, PlayCircle, Timer } from 'lucide-react'
 import { useApp } from '../contexts/AppContext.jsx'
-import { getLevelColor } from '../utils/helper.js'
 
 const levels = [
   {
@@ -22,6 +21,22 @@ const levels = [
 export default function Landing() {
   const { progress } = useApp()
 
+  const getTotalProgressPercent = () => {
+    let totalUnits = 0
+    let completedTotal = 0
+    levels.forEach((level) => {
+      if (!progress[level.id]) return
+      Object.values(progress[level.id]).forEach((moduleData) => {
+        Object.values(moduleData).forEach((unitData) => {
+          totalUnits++
+          if (unitData.completed) completedTotal++
+        })
+      })
+    })
+    if (totalUnits === 0) return 0
+    return Math.round((completedTotal / totalUnits) * 100)
+  }
+
   const getCompletedUnits = (level) => {
     if (!progress[level]) return 0
     let total = 0
@@ -33,33 +48,67 @@ export default function Landing() {
     return total
   }
 
+  const getLastActiveUnit = () => {
+    let lastFound = null
+    levels.forEach((level) => {
+      if (level.id === 'kana') return
+      if (!progress[level.id]) return
+      ['vocab', 'kanji', 'grammar'].forEach((mod) => {
+        if (!progress[level.id][mod]) return
+        Object.entries(progress[level.id][mod]).forEach(([uId, uData]) => {
+          if (!uData.completed) {
+            if (!lastFound) {
+              lastFound = { level: level.id, mod, unitId: uId }
+            }
+          }
+        })
+      })
+    })
+    return lastFound || { level: 'n5', mod: 'vocab', unitId: 'unit-1' }
+  }
+
+  const totalPercent = getTotalProgressPercent()
+
+  const lastActive = getLastActiveUnit()
+  const lastActiveLink = `/${lastActive.level}/${lastActive.mod}/${lastActive.unitId}`
+  const lastActiveTitle = `${lastActive.level.toUpperCase()} • ${lastActive.mod} • ${lastActive.unitId.replace('-', ' ')}`
+
   return (
     <div className="min-h-screen bg-zen-bg flex flex-col items-center justify-center p-4 md:p-8">
       <div className="max-w-5xl mx-auto w-full py-8">
         <section className="text-center mb-16 relative">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-zen-pink/30 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-zen-accent/20 rounded-full blur-3xl pointer-events-none"></div>
           
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-zen-card border-2 border-zen-border rounded-full text-xs font-bold text-zen-accent-dark mb-6 shadow-sm animate-bounce-soft">
-            <Sparkles size={14} />
-            <span>Manabu Zen JLPT • Belajar Bahasa Jepang Lebih Aesthetic</span>
+            <img 
+              src="https://media1.tenor.com/m/_SWlyuEfNUAAAAAC/scuba-scuba-cat.gif" 
+              alt="Cat" 
+              className="w-5 h-5 rounded-full object-cover"
+            />
+            <span>VLearn JLPT • ブイラーン JLPT</span>
+            <img 
+              src="https://media1.tenor.com/m/_SWlyuEfNUAAAAAC/scuba-scuba-cat.gif" 
+              alt="Cat Right" 
+              className="w-5 h-5 rounded-full object-cover"
+            />
           </div>
 
           <h1 className="text-6xl md:text-7xl font-extrabold text-zen-text-dark mb-4 tracking-tight japanese-text">
-            学ぶ禅
+            VLearn
           </h1>
-          <p className="text-xl md:text-2xl font-medium text-zen-text mb-8 max-w-xl mx-auto leading-relaxed">
-            Portal belajar bahasa Jepang untuk persiapan JLPT. Tenang, fokus, dan estetik ala Zen.
+          <p className="text-xl md:text-2xl font-semibold text-zen-text mb-8 max-w-xl mx-auto leading-relaxed">
+            Yo, Minna-san! ⚡ Ini website belajar gua sendiri khusus buat persiapan JLPT. 🚀🔥
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-zen-text text-sm font-semibold">
             <div className="flex items-center gap-2 px-4 py-2 bg-zen-card border-2 border-zen-border rounded-2xl shadow-sm">
-              <BookOpen size={18} className="text-zen-accent-dark" />
-              <span>Gratis & Tanpa Akun</span>
+              <BarChart3 size={18} className="text-zen-accent-dark" />
+              <span>Progress: {totalPercent}% Selesai</span>
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-zen-card border-2 border-zen-border rounded-2xl shadow-sm">
-              <BookMarked size={18} className="text-zen-accent-dark" />
-              <span>Semua Level Terbuka</span>
-            </div>
+            <Link to={lastActiveLink} className="flex items-center gap-2 px-4 py-2 bg-zen-card border-2 border-zen-border rounded-2xl shadow-sm hover:border-zen-accent transition-all">
+              <PlayCircle size={18} className="text-zen-accent-dark" />
+              <span>Lanjut: {lastActiveTitle}</span>
+            </Link>
             <Link to="/zen" className="flex items-center gap-2 px-4 py-2 bg-zen-accent text-white rounded-2xl shadow-md hover:bg-zen-accent-dark transition-all">
               <Timer size={18} />
               <span>Zen Mode</span>
@@ -69,7 +118,6 @@ export default function Landing() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {levels.map((level) => {
-            const colors = getLevelColor(level.id)
             const completedUnits = getCompletedUnits(level.id)
             const href = level.id === 'kana' ? '/kana' : `/${level.id}`
 
@@ -79,7 +127,7 @@ export default function Landing() {
                 to={href}
                 className="bg-zen-card border-2 border-zen-border rounded-3xl p-6 text-left transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:border-zen-accent group relative overflow-hidden shadow-lg flex flex-col justify-between"
               >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-zen-lavender/20 rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-zen-accent-light rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
 
                 <div>
                   <div className="flex items-center justify-between mb-4">
