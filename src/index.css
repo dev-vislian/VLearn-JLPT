@@ -2,20 +2,20 @@
 @import "tailwindcss";
 
 @theme {
-  --color-zen-bg: #fff9fb;
+  --color-zen-bg: #f8fafc;
   --color-zen-card: #ffffff;
-  --color-zen-text: #6b5b7a;
-  --color-zen-text-dark: #3d2c4e;
-  --color-zen-accent: #e879f9;
-  --color-zen-accent-dark: #c026d3;
-  --color-zen-accent-light: #fce7f3;
-  --color-zen-border: #f5d0fe;
-  --color-zen-success: #bbf7d0;
-  --color-zen-error: #fecaca;
-  --color-zen-warning: #fef3c7;
-  --color-zen-pink: #fbcfe8;
-  --color-zen-lavender: #e9d5ff;
-  --color-zen-mint: #d1fae5;
+  --color-zen-text: #475569;
+  --color-zen-text-dark: #0f172a;
+  --color-zen-accent: #2563eb;
+  --color-zen-accent-dark: #1d4ed8;
+  --color-zen-accent-light: #dbeafe;
+  --color-zen-border: #cbd5e1;
+  --color-zen-success: #22c55e;
+  --color-zen-error: #ef4444;
+  --color-zen-warning: #f59e0b;
+  --color-zen-pink: #93c5fd;
+  --color-zen-lavender: #e0f2fe;
+  --color-zen-mint: #a7f3d0;
   --font-family-sans: 'Quicksand', 'Noto Sans JP', system-ui, sans-serif;
   --font-family-jp: 'Noto Sans JP', sans-serif;
 }
