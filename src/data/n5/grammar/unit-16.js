@@ -65,4 +65,26 @@ export const unitData = [
       meaning: 'Akhir pekan saya belanja dan nonton film.',
     },
   },
+  {
+    id: 'n5-g-79',
+    pattern: '~noni (～のに)',
+    category: 'Miscellaneous N5 Patterns',
+    meaning: 'Menunjukkan kontradiksi atau kekecewaan. "Meskipun seharusnya..." atau "Padahal...". Mengungkapkan bahwa hasilnya berbeda dari yang diharapkan.',
+    example: {
+      sentence: '約束したのに、来ませんでした。',
+      romaji: 'Yakusoku shita noni, kimasen deshita.',
+      meaning: 'Padahal sudah janji, dia tidak datang.',
+    },
+  },
+  {
+    id: 'n5-g-80',
+    pattern: '~zu ni (～ずに)',
+    category: 'Miscellaneous N5 Patterns',
+    meaning: 'Melakukan sesuatu tanpa melakukan hal lainnya. "Tanpa melakukan..." atau "Tanpa...". Terbentuk dari bentuk negatif ない → ずに. Lebih formal daripada ~ないで.',
+    example: {
+      sentence: '朝ご飯を食べずに学校へ行きました。',
+      romaji: 'Asagohan o tabezu ni gakkou e ikimashita.',
+      meaning: 'Saya pergi ke sekolah tanpa makan sarapan.',
+    },
+  },
 ]

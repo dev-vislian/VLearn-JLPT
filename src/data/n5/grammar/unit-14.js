@@ -43,4 +43,15 @@ export const unitData = [
       meaning: 'Anda harus minum obat.',
     },
   },
+  {
+    id: 'n5-g-67',
+    pattern: '~beki (～べき)',
+    category: 'Polite Requests & Commands',
+    meaning: 'Menunjukkan sesuatu yang seharusnya dilakukan berdasarkan pertimbangan moral, etika, atau nasihat. "Seharusnya..." atau "Patutnya...". Digunakan dalam situasi formal.',
+    example: {
+      sentence: '約束は守るべきです。',
+      romaji: 'Yakusoku wa mamoru beki desu.',
+      meaning: 'Janji seharusnya ditepati.',
+    },
+  },
 ]
