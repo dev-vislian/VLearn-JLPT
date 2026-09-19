@@ -1,16 +1,54 @@
-# React + Vite
+# manabu-zen-jlpt (VLearn JLPT)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplikasi belajar bahasa Jepang untuk persiapan JLPT. Saat ini berisi materi level **N5** dengan berbagai mode belajar yang interaktif.
 
-Currently, two official plugins are available:
+## Akses Online
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Live Website:** <https://dev-vislian.github.io/VLearn-JLPT/>
 
-## React Compiler
+## Fitur
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Kana** — Belajar hiragana & katakana dengan 4 mode: Grid, Flashcard, Match, dan Quiz.
+- **JLPT N5** — Materi kanji, kosakata, dan grammar yang dikelompokkan per unit.
+  - **Summary** — Daftar materi lengkap dengan pencarian, bookmark, dan audio.
+  - **Flashcard** — Hafalan kartu bolak-balik (Jepang ↔ Indonesia).
+  - **Match** — Pasangkan karakter dengan arti.
+  - **Quiz** — Pilihan ganda dengan skor.
+  - **Matome** — Latihan kontekstual berbasis kalimat.
+- **Zen Mode** — Timer pomodoro untuk sesi belajar fokus.
+- **Favorites** — Kumpulan item yang di-bookmark.
+- **Furigana toggle** — Tampilkan/sembunyikan furigana.
+- **Text-to-Speech** — Dengarkan pelafalan bahasa Jepang.
 
-## Expanding the ESLint configuration
+## Teknologi
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- React 19 + Vite
+- Tailwind CSS v4
+- React Router v7
+- Deploy otomatis ke GitHub Pages via GitHub Actions
+
+## Menjalankan Secara Lokal
+
+```bash
+npm install
+npm run dev
+```
+
+## Build Offline
+
+```bash
+npm run build -- --mode offline
+```
+
+Build offline berada di folder `dist-offline/` dan bisa dibuka langsung via `file://`.
+
+## Struktur Data
+
+- `src/data/kana.js` — data hiragana & katakana.
+- `src/data/n5/vocab/` — kosakata N5 (16 unit).
+- `src/data/n5/kanji/` — kanji N5 (5 unit).
+- `src/data/n5/grammar/` — grammar N5 (16 unit).
+
+## Deployment
+
+Workflow `.github/workflows/deploy.yml` otomatis membangun dan deploy aplikasi ke GitHub Pages setiap push ke branch `main`.
