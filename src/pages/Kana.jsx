@@ -1,18 +1,20 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Grid3x3, BookOpen, Shuffle, HelpCircle } from 'lucide-react'
+import { ArrowLeft, Grid3x3, BookOpen, Shuffle, HelpCircle, Zap } from 'lucide-react'
 import { kanaData } from '../data/kana.js'
 import { shuffleArray } from '../utils/helper.js'
 import KanaGrid from '../components/KanaGrid.jsx'
 import KanaFlashcard from '../components/KanaFlashcard.jsx'
 import KanaMatch from '../components/KanaMatch.jsx'
 import KanaQuiz from '../components/KanaQuiz.jsx'
+import KanaRush from '../components/KanaRush.jsx'
 
 const modes = [
   { id: 'grid', label: 'Grid', icon: Grid3x3 },
   { id: 'flashcard', label: 'Flashcard', icon: BookOpen },
   { id: 'match', label: 'Cocokkan', icon: Shuffle },
   { id: 'quiz', label: 'Kuis', icon: HelpCircle },
+  { id: 'rush', label: 'Rush', icon: Zap },
 ]
 
 export default function Kana() {
@@ -70,7 +72,7 @@ export default function Kana() {
 
         <div className="mb-8">
           <label className="block text-sm font-medium text-zen-text-dark mb-3">Pilih Mode Aktivitas</label>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {modes.map((mode) => {
               const Icon = mode.icon
               return (
@@ -96,6 +98,7 @@ export default function Kana() {
           {selectedMode === 'flashcard' && <KanaFlashcard data={shuffleArray(currentData)} />}
           {selectedMode === 'match' && <KanaMatch data={shuffleArray(currentData)} />}
           {selectedMode === 'quiz' && <KanaQuiz data={shuffleArray(currentData)} />}
+          {selectedMode === 'rush' && <KanaRush key={selectedType} data={currentData} />}
         </div>
       </div>
     </div>

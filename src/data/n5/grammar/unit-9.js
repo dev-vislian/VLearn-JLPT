@@ -22,6 +22,17 @@ export const unitData = [
     },
   },
   {
+    id: 'n5-g-40',
+    pattern: '～ために (~ta tame ni)',
+    category: 'Tujuan/Akibat',
+    meaning: 'Menyatakan tujuan atau alasan melakukan sesuatu (untuk/demi...)',
+    example: {
+      sentence: '日本語を勉強するために、日本に来ました。',
+      romaji: 'Nihongo o benkyou suru tame ni, Nihon ni kimashita.',
+      meaning: 'Saya datang ke Jepang untuk belajar bahasa Jepang.',
+    },
+  },
+  {
     id: 'n5-g-41',
     pattern: 'から (kara)',
     category: 'Partikel Alasan',
