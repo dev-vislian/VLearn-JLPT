@@ -96,8 +96,8 @@ export default function Landing() {
           <h1 className="text-6xl md:text-7xl font-extrabold text-zen-text-dark mb-4 tracking-tight japanese-text">
             VLearn
           </h1>
-          <p className="text-xl md:text-2xl font-semibold text-zen-text mb-8 max-w-xl mx-auto leading-relaxed">
-            Yo, Minna-san! ⚡ Ini website belajar gua sendiri khusus buat persiapan JLPT. 🚀🔥
+<p className="text-xl md:text-2xl font-semibold text-zen-text mb-8 max-w-xl mx-auto leading-relaxed">
+            Yo, 皆さん! ⚡ Ini website belajar gua sendiri khusus buat persiapan JLPT. 🚀🔥
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-zen-text text-sm font-semibold">
