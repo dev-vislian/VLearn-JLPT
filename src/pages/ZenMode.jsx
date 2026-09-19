@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Timer, Music, Volume2, VolumeX, Sun } from 'lucide-react'
+import { ArrowLeft, Music, Volume2, Sun } from 'lucide-react'
 import { useApp } from '../contexts/AppContext.jsx'
 
 export default function ZenMode() {
   const { zenSettings, toggleZenMode, updateZenSettings } = useApp()
-  const [timeLeft, setTimeLeft] = useState(25 * 60)
+  const [timer, setTimer] = useState(() => ({
+    phase: 'focus',
+    seconds: zenSettings.pomodoro.focus * 60,
+  }))
   const [isFocused, setIsFocused] = useState(true)
-  const [pomodoroState, setPomodoroState] = useState('focus')
 
   const playlists = {
     lofi: 'https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUfTFmNBRM',
@@ -16,25 +18,29 @@ export default function ZenMode() {
   }
 
   useEffect(() => {
-    let interval
-    if (zenSettings.enabled && timeLeft > 0) {
-      interval = setInterval(() => {
-        setTimeLeft((prev) => prev - 1)
-      }, 1000)
-    } else if (timeLeft === 0) {
-      setPomodoroState((prev) => (prev === 'focus' ? 'break' : 'focus'))
-      setTimeLeft(pomodoroState === 'focus' ? zenSettings.pomodoro.break * 60 : zenSettings.pomodoro.focus * 60)
-    }
+    if (!isFocused) return
+    const interval = setInterval(() => {
+      setTimer((prev) => {
+        if (prev.seconds > 1) {
+          return { phase: prev.phase, seconds: prev.seconds - 1 }
+        }
+        const nextPhase = prev.phase === 'focus' ? 'break' : 'focus'
+        const nextSeconds =
+          nextPhase === 'focus'
+            ? zenSettings.pomodoro.focus * 60
+            : zenSettings.pomodoro.break * 60
+        return { phase: nextPhase, seconds: nextSeconds }
+      })
+    }, 1000)
     return () => clearInterval(interval)
-  }, [timeLeft, zenSettings.enabled, pomodoroState, zenSettings.pomodoro.focus, zenSettings.pomodoro.break])
+  }, [isFocused, zenSettings.pomodoro.focus, zenSettings.pomodoro.break])
 
   const toggleTimer = () => {
     setIsFocused((prev) => !prev)
   }
 
   const resetTimer = () => {
-    setTimeLeft(zenSettings.pomodoro.focus * 60)
-    setPomodoroState('focus')
+    setTimer({ phase: 'focus', seconds: zenSettings.pomodoro.focus * 60 })
     setIsFocused(true)
   }
 
@@ -73,12 +79,12 @@ export default function ZenMode() {
           <div className="lg:col-span-2 space-y-8">
             <div className="bg-zen-card rounded-2xl p-8 border border-zen-border text-center">
               <div className="text-sm text-zen-text uppercase tracking-wider mb-4">
-                {pomodoroState === 'focus' ? 'Fokus Belajar' : 'Istirahat'}
+                {timer.phase === 'focus' ? 'Fokus Belajar' : 'Istirahat'}
               </div>
               <div
-                className={`text-7xl font-mono font-medium mb-6 ${pomodoroState === 'focus' ? 'text-zen-text-dark' : 'text-zen-success'}`}
+                className={`text-7xl font-mono font-medium mb-6 ${timer.phase === 'focus' ? 'text-zen-text-dark' : 'text-zen-success'}`}
               >
-                {formatTime(timeLeft)}
+                {formatTime(timer.seconds)}
               </div>
               <div className="flex items-center justify-center gap-4">
                 <button

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Search, Star, Volume2, Ear } from 'lucide-react'
+import { Search, Star, Volume2 } from 'lucide-react'
 import { speak } from '../utils/helper.js'
 
 export default function SummaryView({ data, module, showFurigana, bookmarks, onToggleBookmark }) {

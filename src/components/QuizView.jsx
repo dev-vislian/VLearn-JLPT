@@ -1,29 +1,28 @@
-import { useState, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { CheckCircle2, XCircle } from 'lucide-react'
 import { shuffleArray } from '../utils/helper.js'
 
-export default function QuizView({ data, module, onComplete }) {
+export default function QuizView({ data, module, onComplete, showFurigana }) {
   const [questionIndex, setQuestionIndex] = useState(0)
-  const [options, setOptions] = useState([])
   const [selectedAnswer, setSelectedAnswer] = useState(null)
   const [isCorrect, setIsCorrect] = useState(null)
   const [score, setScore] = useState(0)
+  const [lastIndex, setLastIndex] = useState(questionIndex)
 
-  const current = data[questionIndex]
-
-  useEffect(() => {
-    generateQuestion()
-  }, [questionIndex])
-
-  const generateQuestion = () => {
-    const correct = data[questionIndex]
-    const wrong = data.filter((d) => d.id !== correct.id)
-    const shuffledWrong = shuffleArray(wrong).slice(0, 3)
-    const allOptions = shuffleArray([correct, ...shuffledWrong])
-    setOptions(allOptions)
+  if (lastIndex !== questionIndex) {
+    setLastIndex(questionIndex)
     setSelectedAnswer(null)
     setIsCorrect(null)
   }
+
+  const current = data[questionIndex]
+
+  const options = useMemo(() => {
+    const correct = data[questionIndex]
+    const wrong = data.filter((d) => d.id !== correct.id)
+    const shuffledWrong = shuffleArray(wrong).slice(0, 3)
+    return shuffleArray([correct, ...shuffledWrong])
+  }, [data, questionIndex])
 
   const handleAnswer = (option) => {
     if (selectedAnswer) return
@@ -50,7 +49,8 @@ export default function QuizView({ data, module, onComplete }) {
   const handleRestart = () => {
     setQuestionIndex(0)
     setScore(0)
-    generateQuestion()
+    setSelectedAnswer(null)
+    setIsCorrect(null)
   }
 
   return (
@@ -63,8 +63,11 @@ export default function QuizView({ data, module, onComplete }) {
 
         <div className="bg-zen-bg border border-zen-border rounded-xl p-8 mb-6 text-center">
           <div className="text-4xl font-medium text-zen-text-dark mb-4">
-            {module === 'grammar' ? current.pattern : current.character}
+            {module === 'grammar' ? current.pattern : module === 'vocab' && !showFurigana ? current.character?.split('（')[0] : current.character}
           </div>
+          {showFurigana && current.romaji && (
+            <div className="text-sm text-zen-text/80 mb-4">{current.romaji}</div>
+          )}
           <div className="text-sm text-zen-text/60">Pilih arti yang benar</div>
         </div>
 

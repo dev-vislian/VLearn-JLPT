@@ -5,27 +5,32 @@ import { speak, shuffleArray } from '../utils/helper.js'
 const SLOT_WIDTH = 88
 
 export default function KanaRush({ data }) {
-  const [deck, setDeck] = useState([])
+  const [deck, setDeck] = useState(() => shuffleArray(data))
   const [index, setIndex] = useState(0)
   const [input, setInput] = useState('')
   const [status, setStatus] = useState('idle')
   const [score, setScore] = useState(0)
   const [finished, setFinished] = useState(false)
   const [soundOn, setSoundOn] = useState(true)
+  const [dataRef, setDataRef] = useState(data)
   const inputRef = useRef(null)
   const advanceTimer = useRef(null)
 
-  const current = deck[index]
-
-  useEffect(() => {
+  if (dataRef !== data) {
+    setDataRef(data)
     setDeck(shuffleArray(data))
     setIndex(0)
     setInput('')
     setStatus('idle')
     setScore(0)
     setFinished(false)
+  }
+
+  const current = deck[index]
+
+  useEffect(() => {
     return () => clearTimeout(advanceTimer.current)
-  }, [data])
+  }, [])
 
   useEffect(() => {
     inputRef.current?.focus()
@@ -181,7 +186,7 @@ export default function KanaRush({ data }) {
       <div className="flex items-center gap-2 mb-4">
         <span className="text-sm text-zen-text">⟩ Ketik romaji karakter di tengah</span>
         <button
-          onClick={() => speak(current?.character)}
+          onClick={() => soundOn && speak(current?.character)}
           className="p-2 rounded-full bg-zen-accent/10 hover:bg-zen-accent hover:text-white text-zen-accent transition-colors shadow-sm"
           title="Putar Suara"
         >

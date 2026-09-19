@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Folder, BookmarkCheck, RotateCcw } from 'lucide-react'
+import { ArrowLeft, Folder, RotateCcw } from 'lucide-react'
 import { useApp } from '../contexts/AppContext.jsx'
-import { loadBookmarks, saveBookmarks } from '../utils/helper.js'
 
 const modules = [
   { id: 'kanji', label: '漢字', subtitle: 'Kanji' },
@@ -26,7 +25,7 @@ const moduleLabels = {
 
 export default function Level() {
   const { level } = useParams()
-  const { progress, bookmarks, resetLevelProgress, showFurigana, toggleFurigana } = useApp()
+  const { progress, resetLevelProgress, showFurigana, toggleFurigana } = useApp()
   const [activeModule, setActiveModule] = useState('kanji')
 
   const levelNum = level.toUpperCase()

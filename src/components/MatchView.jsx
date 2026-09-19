@@ -1,26 +1,42 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { RotateCcw } from 'lucide-react'
 
-export default function MatchView({ data, module }) {
-  const [leftItems, setLeftItems] = useState([])
-  const [rightItems, setRightItems] = useState([])
+function pickRound(sourceData) {
+  const shuffledLeft = [...sourceData].sort(() => Math.random() - 0.5).slice(0, 6)
+  const shuffledRight = [...shuffledLeft].sort(() => Math.random() - 0.5)
+  return { left: shuffledLeft, right: shuffledRight }
+}
+
+export default function MatchView({ data, module, showFurigana }) {
+  const [roundData, setRoundData] = useState(() => pickRound(data))
+  const { left: leftItems, right: rightItems } = roundData
   const [selectedLeft, setSelectedLeft] = useState(null)
   const [selectedRight, setSelectedRight] = useState(null)
   const [matched, setMatched] = useState([])
   const [round, setRound] = useState(1)
+  const [dataRef, setDataRef] = useState(data)
 
-  useEffect(() => {
-    initRound(data)
-  }, [data])
-
-  const initRound = (sourceData) => {
-    const shuffledLeft = [...sourceData].sort(() => Math.random() - 0.5).slice(0, 6)
-    const shuffledRight = [...shuffledLeft].sort(() => Math.random() - 0.5)
-    setLeftItems(shuffledLeft)
-    setRightItems(shuffledRight)
+  if (dataRef !== data) {
+    setDataRef(data)
+    setRoundData(pickRound(data))
     setMatched([])
     setSelectedLeft(null)
     setSelectedRight(null)
+    setRound(1)
+  }
+
+  function initRound(sourceData) {
+    setRoundData(pickRound(sourceData))
+    setMatched([])
+    setSelectedLeft(null)
+    setSelectedRight(null)
+  }
+
+  function getDisplayText(item) {
+    if (module === 'vocab' && !showFurigana) {
+      return item.character?.split('（')[0] || item.pattern
+    }
+    return item.character || item.pattern
   }
 
   const handleMatch = (left, right) => {
@@ -63,59 +79,74 @@ export default function MatchView({ data, module }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-8">
-        <div className="space-y-3">
-          {leftItems.map((item) => {
-            const isMatched = matched.includes(item.id)
-            const isSelected = selectedLeft?.id === item.id
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-wider text-zen-text text-center mb-4">
+            {module === 'grammar' ? 'Pola / Kategori' : 'Karakter / Kanji'}
+          </div>
+          <div className="space-y-3">
+            {leftItems.map((item) => {
+              const isMatched = matched.includes(item.id)
+              const isSelected = selectedLeft?.id === item.id
 
-            return (
-              <button
-                key={item.id}
-                onClick={() => {
-                  setSelectedLeft(item)
-                  handleMatch(item, selectedRight)
-                }}
-                disabled={isMatched}
-                className={`w-full p-4 rounded-lg border font-medium text-lg transition-all ${
-                  isMatched
-                    ? 'bg-zen-success/50 border-zen-success text-zen-text-dark/50'
-                    : isSelected
-                    ? 'bg-zen-accent/20 border-zen-accent text-zen-text-dark'
-                    : 'bg-zen-bg border-zen-border text-zen-text-dark hover:border-zen-accent'
-                }`}
-              >
-                {item.character || item.pattern}
-              </button>
-            )
-          })}
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    setSelectedLeft(item)
+                    handleMatch(item, selectedRight)
+                  }}
+                  disabled={isMatched}
+                  className={`w-full min-h-[76px] px-4 py-3 rounded-xl border-2 flex items-center justify-center transition-all ${
+                    isMatched
+                      ? 'bg-zen-success/40 border-zen-success text-zen-text-dark/50'
+                      : isSelected
+                      ? 'bg-zen-accent/20 border-zen-accent text-zen-text-dark shadow-md'
+                      : 'bg-zen-bg border-zen-border text-zen-text-dark hover:border-zen-accent hover:shadow-md'
+                  }`}
+                >
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="font-bold text-lg leading-none">{getDisplayText(item)}</span>
+                    {showFurigana && item.romaji && (
+                      <span className="text-sm text-zen-text/70 font-normal">{item.romaji}</span>
+                    )}
+                  </div>
+                </button>
+              )
+            })}
+          </div>
         </div>
 
-        <div className="space-y-3">
-          {rightItems.map((item) => {
-            const isMatched = matched.includes(item.id)
-            const isSelected = selectedRight?.id === item.id
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-wider text-zen-text text-center mb-4">
+            Arti
+          </div>
+          <div className="space-y-3">
+            {rightItems.map((item) => {
+              const isMatched = matched.includes(item.id)
+              const isSelected = selectedRight?.id === item.id
 
-            return (
-              <button
-                key={item.id}
-                onClick={() => {
-                  setSelectedRight(item)
-                  handleMatch(selectedLeft, item)
-                }}
-                disabled={isMatched}
-                className={`w-full p-4 rounded-lg border font-medium text-lg transition-all ${
-                  isMatched
-                    ? 'bg-zen-success/50 border-zen-success text-zen-text-dark/50'
-                    : isSelected
-                    ? 'bg-zen-accent/20 border-zen-accent text-zen-text-dark'
-                    : 'bg-zen-bg border-zen-border text-zen-text-dark hover:border-zen-accent'
-                }`}
-              >
-                {item.meaning}
-              </button>
-            )
-          })}
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    setSelectedRight(item)
+                    handleMatch(selectedLeft, item)
+                  }}
+                  disabled={isMatched}
+                  className={`w-full min-h-[76px] px-4 py-3 rounded-xl border-2 flex items-center justify-center text-center transition-all ${
+                    isMatched
+                      ? 'bg-zen-success/40 border-zen-success text-zen-text-dark/50'
+                      : isSelected
+                      ? 'bg-zen-accent/20 border-zen-accent text-zen-text-dark shadow-md'
+                      : 'bg-zen-bg border-zen-border text-zen-text-dark hover:border-zen-accent hover:shadow-md'
+                  }`}
+                >
+                  <span className="font-medium text-base leading-snug">{item.meaning}</span>
+                </button>
+              )
+            })}
+          </div>
         </div>
       </div>
 

@@ -1,41 +1,52 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { CheckCircle2, XCircle, ArrowRight, RotateCcw } from 'lucide-react'
 import { shuffleArray } from '../utils/helper.js'
 
-export default function MatomeView({ data, module, onComplete }) {
+function buildMatomeQuestions(data) {
+  return data.map((item) => {
+    const correctMeaning = item.meaning
+    const wrongOptions = data
+      .filter((d) => d.id !== item.id)
+      .map((d) => d.meaning)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3)
+
+    // grammar uses pattern, kanji/vocab use character
+    const displayText = item.pattern || item.character
+    const sentence = item.example?.sentence || item.example?.word || `その日は ${displayText} でした。`
+    const romaji = item.example?.romaji || item.romaji
+    const underlined = displayText.split('（')[0]
+
+    return {
+      id: item.id,
+      sentence,
+      romaji,
+      underlined,
+      correctMeaning,
+      explanation: `Arti dari kata/pola tersebut adalah "${correctMeaning}".`,
+      options: shuffleArray([correctMeaning, ...wrongOptions]),
+    }
+  })
+}
+
+export default function MatomeView({ data, onComplete }) {
+  const [questions, setQuestions] = useState(() => shuffleArray(buildMatomeQuestions(data)))
   const [questionIndex, setQuestionIndex] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState(null)
   const [isCorrect, setIsCorrect] = useState(null)
   const [score, setScore] = useState(0)
-  const [questions, setQuestions] = useState([])
   const [isFinished, setIsFinished] = useState(false)
+  const [dataRef, setDataRef] = useState(data)
 
-  useEffect(() => {
-    const matomeQuestions = data.map((item) => {
-      const correctMeaning = item.meaning
-      const wrongOptions = data
-        .filter((d) => d.id !== item.id)
-        .map((d) => d.meaning)
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 3)
-      
-      const sentence = item.example?.sentence || item.example?.word || `その日は ${item.character} でした。`
-      const romaji = item.example?.romaji || item.romaji
-      const underlined = item.character.split('（')[0]
-
-      return {
-        id: item.id,
-        sentence,
-        romaji,
-        underlined,
-        correctMeaning,
-        explanation: `Arti dari kata/pola tersebut adalah "${correctMeaning}".`,
-        options: shuffleArray([correctMeaning, ...wrongOptions]),
-      }
-    })
-
-    setQuestions(shuffleArray(matomeQuestions))
-  }, [data])
+  if (dataRef !== data) {
+    setDataRef(data)
+    setQuestions(shuffleArray(buildMatomeQuestions(data)))
+    setIsFinished(false)
+    setQuestionIndex(0)
+    setScore(0)
+    setSelectedAnswer(null)
+    setIsCorrect(null)
+  }
 
   const current = questions[questionIndex]
 
@@ -65,12 +76,12 @@ export default function MatomeView({ data, module, onComplete }) {
   }
 
   const handleRestart = () => {
+    setQuestions(shuffleArray(buildMatomeQuestions(data)))
     setQuestionIndex(0)
     setScore(0)
     setSelectedAnswer(null)
     setIsCorrect(null)
     setIsFinished(false)
-    setQuestions(shuffleArray([...questions]))
   }
 
   if (!current) return <div className="text-center py-12 text-zen-text">Memuat soal...</div>

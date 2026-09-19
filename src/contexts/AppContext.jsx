@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState } from 'react'
 
 const AppContext = createContext()
@@ -9,43 +10,41 @@ const STORAGE_KEYS = {
   zenSettings: 'manabu_zen_settings',
 }
 
+const DEFAULT_ZEN_SETTINGS = {
+  enabled: false,
+  pomodoro: { focus: 25, break: 5, active: true },
+  playlist: 'lofi',
+}
+
 export function AppProvider({ children }) {
-  const [progress, setProgress] = useState({})
-  const [bookmarks, setBookmarks] = useState([])
-  const [showFurigana, setShowFurigana] = useState(true)
-  const [zenSettings, setZenSettings] = useState({
-    enabled: false,
-    pomodoro: { focus: 25, break: 5, active: true },
-    playlist: 'lofi',
+  const [progress, setProgress] = useState(() => {
+    const storedProgress = localStorage.getItem(STORAGE_KEYS.progress)
+    return storedProgress ? JSON.parse(storedProgress) : {}
+  })
+  const [bookmarks, setBookmarks] = useState(() => {
+    const storedBookmarks = localStorage.getItem(STORAGE_KEYS.bookmarks)
+    return storedBookmarks ? JSON.parse(storedBookmarks) : []
+  })
+  const [showFurigana, setShowFurigana] = useState(() => {
+    const storedFurigana = localStorage.getItem(STORAGE_KEYS.furigana)
+    return storedFurigana ? JSON.parse(storedFurigana) : true
+  })
+  const [zenSettings, setZenSettings] = useState(() => {
+    const storedZenSettings = localStorage.getItem(STORAGE_KEYS.zenSettings)
+    return storedZenSettings ? JSON.parse(storedZenSettings) : DEFAULT_ZEN_SETTINGS
   })
 
   useEffect(() => {
-    const storedProgress = localStorage.getItem(STORAGE_KEYS.progress)
-    if (storedProgress) {
-      setProgress(JSON.parse(storedProgress))
-    }
-  }, [])
+    localStorage.setItem(STORAGE_KEYS.progress, JSON.stringify(progress))
+  }, [progress])
 
   useEffect(() => {
-    const storedBookmarks = localStorage.getItem(STORAGE_KEYS.bookmarks)
-    if (storedBookmarks) {
-      setBookmarks(JSON.parse(storedBookmarks))
-    }
-  }, [])
+    localStorage.setItem(STORAGE_KEYS.bookmarks, JSON.stringify(bookmarks))
+  }, [bookmarks])
 
   useEffect(() => {
-    const storedFurigana = localStorage.getItem(STORAGE_KEYS.furigana)
-    if (storedFurigana) {
-      setShowFurigana(JSON.parse(storedFurigana))
-    }
-  }, [])
-
-  useEffect(() => {
-    const storedZenSettings = localStorage.getItem(STORAGE_KEYS.zenSettings)
-    if (storedZenSettings) {
-      setZenSettings(JSON.parse(storedZenSettings))
-    }
-  }, [])
+    localStorage.setItem(STORAGE_KEYS.zenSettings, JSON.stringify(zenSettings))
+  }, [zenSettings])
 
   const toggleBookmark = (itemId, itemData) => {
     setBookmarks((prev) => {
