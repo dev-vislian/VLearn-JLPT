@@ -1,29 +1,35 @@
-import { useState, useEffect } from 'react'
-import { ArrowLeft, RotateCcw } from 'lucide-react'
+import { useState } from 'react'
+import { RotateCcw } from 'lucide-react'
+
+function pickRound(sourceData) {
+  const shuffledLeft = [...sourceData].sort(() => Math.random() - 0.5).slice(0, 6)
+  const shuffledRight = [...shuffledLeft].sort(() => Math.random() - 0.5)
+  return { left: shuffledLeft, right: shuffledRight, total: Math.ceil(sourceData.length / 6) }
+}
 
 export default function KanaMatch({ data }) {
-  const [leftItems, setLeftItems] = useState([])
-  const [rightItems, setRightItems] = useState([])
+  const [roundData, setRoundData] = useState(() => pickRound(data))
+  const { left: leftItems, right: rightItems, total: totalRounds } = roundData
   const [selectedLeft, setSelectedLeft] = useState(null)
   const [selectedRight, setSelectedRight] = useState(null)
   const [matched, setMatched] = useState([])
   const [round, setRound] = useState(1)
-  const [totalRounds, setTotalRounds] = useState(0)
+  const [dataRef, setDataRef] = useState(data)
 
-  useEffect(() => {
-    initRound(data)
-  }, [data])
-
-  const initRound = (sourceData) => {
-    const shuffledLeft = [...sourceData].sort(() => Math.random() - 0.5).slice(0, 6)
-    const shuffledRight = [...shuffledLeft].sort(() => Math.random() - 0.5)
-
-    setLeftItems(shuffledLeft)
-    setRightItems(shuffledRight)
+  if (dataRef !== data) {
+    setDataRef(data)
+    setRoundData(pickRound(data))
     setMatched([])
     setSelectedLeft(null)
     setSelectedRight(null)
-    setTotalRounds(Math.ceil(sourceData.length / 6))
+    setRound(1)
+  }
+
+  const initRound = (sourceData) => {
+    setRoundData(pickRound(sourceData))
+    setMatched([])
+    setSelectedLeft(null)
+    setSelectedRight(null)
   }
 
   const handleLeftClick = (item) => {

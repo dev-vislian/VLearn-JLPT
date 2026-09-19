@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { ArrowRight, Volume2 } from 'lucide-react'
 import { speak } from '../utils/helper.js'
 
-export default function FlashcardView({ data, module, showFurigana }) {
+export default function FlashcardView({ data, module }) {
   const [index, setIndex] = useState(0)
   const [flipped, setFlipped] = useState(false)
   const [animating, setAnimating] = useState(false)

@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, BookOpen, Shuffle, HelpCircle, FileText } from 'lucide-react'
 import { useApp } from '../contexts/AppContext.jsx'
-import { speak, shuffleArray } from '../utils/helper.js'
+import { shuffleArray } from '../utils/helper.js'
 import { getUnitData } from '../data/registry.js'
 import SummaryView from '../components/SummaryView.jsx'
 import FlashcardView from '../components/FlashcardView.jsx'
@@ -31,23 +31,24 @@ export default function Unit() {
     const saved = localStorage.getItem(`unit-activity-${level}-${module}-${unitId}`)
     return saved || 'summary'
   })
-  const [unitData, setUnitData] = useState([])
-  
-  useEffect(() => {
-    console.log('Unit mount:', { level, module, unitId })
-  }, [])
+  const [lastParams, setLastParams] = useState(`${level}-${module}-${unitId}`)
+
+  const unitParams = `${level}-${module}-${unitId}`
+  const unitData = getUnitData(level, module, unitId)
+  const shuffledData = useMemo(() => shuffleArray(unitData), [unitData])
+
+  if (lastParams !== unitParams) {
+    setLastParams(unitParams)
+    setActiveActivity(localStorage.getItem(`unit-activity-${level}-${module}-${unitId}`) || 'summary')
+  }
+
+  if (unitData.length === 0 && activeActivity !== 'summary') {
+    setActiveActivity('summary')
+  }
 
   useEffect(() => {
     localStorage.setItem(`unit-activity-${level}-${module}-${unitId}`, activeActivity)
   }, [activeActivity, level, module, unitId])
-
-  useEffect(() => {
-    const data = getUnitData(level, module, unitId)
-    setUnitData(data)
-    if (!data || data.length === 0) {
-      setActiveActivity('summary')
-    }
-  }, [level, module, unitId])
 
   const handleComplete = () => {
     updateProgress(level, module, unitId, { completed: true, completedAt: Date.now() })
@@ -112,16 +113,16 @@ export default function Unit() {
               />
             )}
             {activeActivity === 'flashcard' && (
-              <FlashcardView data={shuffleArray(unitData)} module={module} showFurigana={showFurigana} />
+              <FlashcardView data={shuffledData} module={module} />
             )}
             {activeActivity === 'match' && (
-              <MatchView data={shuffleArray(unitData)} module={module} />
+              <MatchView data={shuffledData} module={module} showFurigana={showFurigana} />
             )}
             {activeActivity === 'quiz' && (
-              <QuizView data={shuffleArray(unitData)} module={module} onComplete={handleComplete} />
+              <QuizView data={shuffledData} module={module} onComplete={handleComplete} showFurigana={showFurigana} />
             )}
             {activeActivity === 'matome' && (
-              <MatomeView data={shuffleArray(unitData)} module={module} onComplete={handleComplete} />
+              <MatomeView data={shuffledData} module={module} onComplete={handleComplete} />
             )}
           </>
         ) : (

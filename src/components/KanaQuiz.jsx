@@ -1,29 +1,28 @@
-import { useState, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { Volume2, CheckCircle2, XCircle } from 'lucide-react'
 import { speak, shuffleArray } from '../utils/helper.js'
 
 export default function KanaQuiz({ data }) {
   const [questionIndex, setQuestionIndex] = useState(0)
-  const [options, setOptions] = useState([])
   const [selectedAnswer, setSelectedAnswer] = useState(null)
   const [isCorrect, setIsCorrect] = useState(null)
   const [score, setScore] = useState(0)
+  const [lastIndex, setLastIndex] = useState(questionIndex)
 
-  const current = data[questionIndex]
-
-  useEffect(() => {
-    generateQuestion()
-  }, [questionIndex])
-
-  const generateQuestion = () => {
-    const correct = data[questionIndex]
-    const wrong = data.filter((d) => d.id !== correct.id)
-    const shuffledWrong = shuffleArray(wrong).slice(0, 3)
-    const options = shuffleArray([correct, ...shuffledWrong])
-    setOptions(options)
+  if (lastIndex !== questionIndex) {
+    setLastIndex(questionIndex)
     setSelectedAnswer(null)
     setIsCorrect(null)
   }
+
+  const current = data[questionIndex]
+
+  const options = useMemo(() => {
+    const correct = data[questionIndex]
+    const wrong = data.filter((d) => d.id !== correct.id)
+    const shuffledWrong = shuffleArray(wrong).slice(0, 3)
+    return shuffleArray([correct, ...shuffledWrong])
+  }, [data, questionIndex])
 
   const handleAnswer = (option) => {
     if (selectedAnswer) return
@@ -50,7 +49,8 @@ export default function KanaQuiz({ data }) {
   const handleRestart = () => {
     setQuestionIndex(0)
     setScore(0)
-    generateQuestion()
+    setSelectedAnswer(null)
+    setIsCorrect(null)
   }
 
   return (
