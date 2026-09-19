@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import Landing from './pages/Landing.jsx'
 import Kana from './pages/Kana.jsx'
 import Level from './pages/Level.jsx'
@@ -17,6 +17,7 @@ function App() {
         <Route path="/:level/:module/:unitId" element={<Unit />} />
         <Route path="/favorites" element={<Favorites />} />
         <Route path="/zen" element={<ZenMode />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AppProvider>
   )

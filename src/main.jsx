@@ -4,7 +4,9 @@ import { BrowserRouter, HashRouter } from 'react-router-dom'
 import App from './App.jsx'
 import './index.css'
 
-const Router = import.meta.env.VITE_OFFLINE === 'true' ? HashRouter : BrowserRouter
+const Router = import.meta.env.VITE_OFFLINE === 'true'
+  ? HashRouter
+  : (props) => <BrowserRouter {...props} basename="/VLearn-JLPT/" />
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
