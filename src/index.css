@@ -1,23 +1,72 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=Shippori+Mincho+B1:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap');
 @import "tailwindcss";
 
+/* ---------- Palette ----------
+   Light = washi paper + ai (藍) indigo
+   Dark  = 夜 night + lighter indigo for contrast
+----------------------------------- */
+:root,
+:root[data-theme="light"] {
+  --zen-bg: #faf7f0;
+  --zen-card: #ffffff;
+  --zen-text: #55504a;
+  --zen-text-dark: #1c1a17;
+  --zen-accent: #1e3a5f;
+  --zen-accent-dark: #14293f;
+  --zen-accent-light: #dce4ee;
+  --zen-border: #ded5c8;
+  --zen-success: #4a7c59;
+  --zen-error: #b4463c;
+  --zen-seal: #c0392b;
+  --zen-shadow: rgba(28, 26, 23, 0.08);
+}
+
+:root[data-theme="dark"] {
+  --zen-bg: #14161c;
+  --zen-card: #1c1f27;
+  --zen-text: #a8adb8;
+  --zen-text-dark: #eef1f5;
+  --zen-accent: #7fa8d8;
+  --zen-accent-dark: #a3c4e8;
+  --zen-accent-light: #2a3444;
+  --zen-border: #2f3540;
+  --zen-success: #6ea87c;
+  --zen-error: #d9776b;
+  --zen-seal: #e05a4a;
+  --zen-shadow: rgba(0, 0, 0, 0.4);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --zen-bg: #14161c;
+    --zen-card: #1c1f27;
+    --zen-text: #a8adb8;
+    --zen-text-dark: #eef1f5;
+    --zen-accent: #7fa8d8;
+    --zen-accent-dark: #a3c4e8;
+    --zen-accent-light: #2a3444;
+    --zen-border: #2f3540;
+    --zen-success: #6ea87c;
+    --zen-error: #d9776b;
+    --zen-seal: #e05a4a;
+    --zen-shadow: rgba(0, 0, 0, 0.4);
+  }
+}
+
 @theme {
-  --color-zen-bg: #f8fafc;
-  --color-zen-card: #ffffff;
-  --color-zen-text: #475569;
-  --color-zen-text-dark: #0f172a;
-  --color-zen-accent: #2563eb;
-  --color-zen-accent-dark: #1d4ed8;
-  --color-zen-accent-light: #dbeafe;
-  --color-zen-border: #cbd5e1;
-  --color-zen-success: #22c55e;
-  --color-zen-error: #ef4444;
-  --color-zen-warning: #f59e0b;
-  --color-zen-pink: #93c5fd;
-  --color-zen-lavender: #e0f2fe;
-  --color-zen-mint: #a7f3d0;
-  --font-family-sans: 'Quicksand', 'Noto Sans JP', system-ui, sans-serif;
-  --font-family-jp: 'Noto Sans JP', sans-serif;
+  --color-zen-bg: var(--zen-bg);
+  --color-zen-card: var(--zen-card);
+  --color-zen-text: var(--zen-text);
+  --color-zen-text-dark: var(--zen-text-dark);
+  --color-zen-accent: var(--zen-accent);
+  --color-zen-accent-dark: var(--zen-accent-dark);
+  --color-zen-accent-light: var(--zen-accent-light);
+  --color-zen-border: var(--zen-border);
+  --color-zen-success: var(--zen-success);
+  --color-zen-error: var(--zen-error);
+  --color-zen-seal: var(--zen-seal);
+  --font-sans: 'Noto Sans JP', system-ui, sans-serif;
+  --font-display: 'Shippori Mincho', 'Shippori Mincho B1', serif;
 }
 
 * {
@@ -30,17 +79,27 @@ html {
 
 body {
   @apply m-0 p-0 bg-zen-bg text-zen-text font-sans;
-  font-family: 'Quicksand', 'Noto Sans JP', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Kana & kanji glyphs stay gothic/sans - itu cara Jepang mengajar.
+   Mincho serif hanya untuk heading Latin. */
 .japanese-text {
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: 'Noto Sans JP', system-ui, sans-serif;
+}
+
+.font-display {
+  font-family: 'Shippori Mincho', 'Shippori Mincho B1', serif;
 }
 
 #root {
   @apply min-h-screen flex flex-col;
+}
+
+h1, h2 {
+  font-family: 'Shippori Mincho', 'Shippori Mincho B1', serif;
 }
 
 h1 {
@@ -63,47 +122,12 @@ button {
   @apply transition-all duration-300 ease-out;
 }
 
-button:hover {
-  @apply shadow-xl transform -translate-y-0.5;
-}
-
-button:active {
-  @apply transform translate-y-0 shadow-md;
-}
-
-button:focus-visible {
+button:focus-visible,
+a:focus-visible {
   @apply outline-2 outline-offset-2 outline-zen-accent-dark;
 }
 
-.card-hover {
-  @apply transition-all duration-300;
-}
-
-.card-hover:hover {
-  @apply shadow-2xl transform -translate-y-1;
-  border-color: var(--color-zen-accent);
-}
-
-.glass-effect {
-  @apply backdrop-blur-md bg-white/80;
-}
-
-.gradient-border {
-  background: linear-gradient(135deg, var(--color-zen-pink), var(--color-zen-lavender), var(--color-zen-mint));
-  padding: 2px;
-  border-radius: 1.5rem;
-}
-
-.gradient-border-inner {
-  background: var(--color-zen-card);
-  border-radius: 1.4rem;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-
+/* ---------- Motion ---------- */
 @keyframes bounce-soft {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.05); }
@@ -114,28 +138,62 @@ button:focus-visible {
   to { opacity: 1; transform: translateY(0); }
 }
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.995); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.animate-bounce-soft {
-  animation: bounce-soft 2s ease-in-out infinite;
+@keyframes stampIn {
+  0% { opacity: 0; transform: scale(1.6) rotate(-14deg); }
+  60% { opacity: 1; transform: scale(0.94) rotate(3deg); }
+  100% { opacity: 1; transform: scale(1) rotate(-5deg); }
 }
 
-.animate-fadeIn {
-  animation: fadeIn 0.3s ease-out;
+@keyframes mascotFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.animate-bounce-soft { animation: bounce-soft 2s ease-in-out infinite; }
+.animate-fadeIn { animation: fadeIn 0.3s ease-out; }
+.animate-pageIn { animation: pageIn 0.35s ease-out both; }
+.animate-stampIn { animation: stampIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.animate-mascotFloat { animation: mascotFloat 4s ease-in-out infinite; }
+
+/* ---------- 印 seal (unit selesai) ---------- */
+.stamp {
+  @apply inline-flex items-center justify-center font-bold border-2 rounded-lg;
+  border-color: var(--zen-seal);
+  color: var(--zen-seal);
+  box-shadow: inset 0 0 0 1px var(--zen-seal);
+  opacity: 0.9;
+}
+
+/* ---------- Neumorphic card ---------- */
+.jp-card {
+  @apply rounded-3xl transition-all duration-300;
+  box-shadow: 4px 4px 10px var(--zen-shadow), -4px -4px 10px var(--zen-shadow);
+}
+
+.jp-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 6px 8px 16px var(--zen-shadow), -6px -6px 14px var(--zen-shadow);
+}
+
+/* ---------- Accessibility ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 @media (max-width: 768px) {
-  h1 {
-    @apply text-3xl;
-  }
-
-  h2 {
-    @apply text-2xl;
-  }
-
-  h3 {
-    @apply text-lg;
-  }
+  h1 { @apply text-3xl; }
+  h2 { @apply text-2xl; }
+  h3 { @apply text-lg; }
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { CheckCircle2, XCircle, ArrowRight, RotateCcw } from 'lucide-react'
 import { shuffleArray } from '../utils/helper.js'
+import { playCorrect, playWrong, playComplete, playTap } from '../utils/sound.js'
 
 function buildMatomeQuestions(data) {
   return data.map((item) => {
@@ -36,17 +37,6 @@ export default function MatomeView({ data, onComplete }) {
   const [isCorrect, setIsCorrect] = useState(null)
   const [score, setScore] = useState(0)
   const [isFinished, setIsFinished] = useState(false)
-  const [dataRef, setDataRef] = useState(data)
-
-  if (dataRef !== data) {
-    setDataRef(data)
-    setQuestions(shuffleArray(buildMatomeQuestions(data)))
-    setIsFinished(false)
-    setQuestionIndex(0)
-    setScore(0)
-    setSelectedAnswer(null)
-    setIsCorrect(null)
-  }
 
   const current = questions[questionIndex]
 
@@ -59,10 +49,14 @@ export default function MatomeView({ data, onComplete }) {
 
     if (correct) {
       setScore((prev) => prev + 1)
+      playCorrect()
+    } else {
+      playWrong()
     }
   }
 
   const handleNextQuestion = () => {
+    playTap()
     if (questionIndex + 1 < questions.length) {
       setQuestionIndex((prev) => prev + 1)
       setSelectedAnswer(null)
@@ -70,12 +64,14 @@ export default function MatomeView({ data, onComplete }) {
     } else {
       setIsFinished(true)
       if (score >= questions.length * 0.7) {
+        playComplete()
         onComplete()
       }
     }
   }
 
   const handleRestart = () => {
+    playTap()
     setQuestions(shuffleArray(buildMatomeQuestions(data)))
     setQuestionIndex(0)
     setScore(0)

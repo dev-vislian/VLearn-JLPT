@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { RotateCcw, Volume2 } from 'lucide-react'
 import { speak, shuffleArray } from '../utils/helper.js'
+import { playCorrect, playWrong, playTap } from '../utils/sound.js'
 
 const SLOT_WIDTH = 88
 
@@ -12,19 +13,8 @@ export default function KanaRush({ data }) {
   const [score, setScore] = useState(0)
   const [finished, setFinished] = useState(false)
   const [soundOn, setSoundOn] = useState(true)
-  const [dataRef, setDataRef] = useState(data)
   const inputRef = useRef(null)
   const advanceTimer = useRef(null)
-
-  if (dataRef !== data) {
-    setDataRef(data)
-    setDeck(shuffleArray(data))
-    setIndex(0)
-    setInput('')
-    setStatus('idle')
-    setScore(0)
-    setFinished(false)
-  }
 
   const current = deck[index]
 
@@ -37,6 +27,7 @@ export default function KanaRush({ data }) {
   }, [index, finished])
 
   const handleRestart = () => {
+    playTap()
     clearTimeout(advanceTimer.current)
     setDeck(shuffleArray(data))
     setIndex(0)
@@ -57,6 +48,9 @@ export default function KanaRush({ data }) {
     setStatus(isCorrect ? 'success' : 'error')
     if (isCorrect) {
       setScore((prev) => prev + 1)
+      if (soundOn) playCorrect()
+    } else if (soundOn) {
+      playWrong()
     }
 
     advanceTimer.current = setTimeout(() => {

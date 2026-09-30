@@ -1,19 +1,13 @@
 import { useState, useMemo } from 'react'
 import { Volume2, CheckCircle2, XCircle } from 'lucide-react'
 import { speak, shuffleArray } from '../utils/helper.js'
+import { playCorrect, playWrong, playComplete, playTap } from '../utils/sound.js'
 
 export default function KanaQuiz({ data }) {
   const [questionIndex, setQuestionIndex] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState(null)
   const [isCorrect, setIsCorrect] = useState(null)
   const [score, setScore] = useState(0)
-  const [lastIndex, setLastIndex] = useState(questionIndex)
-
-  if (lastIndex !== questionIndex) {
-    setLastIndex(questionIndex)
-    setSelectedAnswer(null)
-    setIsCorrect(null)
-  }
 
   const current = data[questionIndex]
 
@@ -33,11 +27,18 @@ export default function KanaQuiz({ data }) {
 
     if (correct) {
       setScore((prev) => prev + 1)
+      playCorrect()
+    } else {
+      playWrong()
     }
 
     setTimeout(() => {
       if (questionIndex + 1 < data.length) {
         setQuestionIndex((prev) => prev + 1)
+        setSelectedAnswer(null)
+        setIsCorrect(null)
+      } else {
+        playComplete()
       }
     }, 1500)
   }
@@ -47,6 +48,7 @@ export default function KanaQuiz({ data }) {
   }
 
   const handleRestart = () => {
+    playTap()
     setQuestionIndex(0)
     setScore(0)
     setSelectedAnswer(null)

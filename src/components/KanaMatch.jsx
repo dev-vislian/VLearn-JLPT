@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { RotateCcw } from 'lucide-react'
+import { playCorrect, playWrong, playComplete, playTap } from '../utils/sound.js'
 
 function pickRound(sourceData) {
   const shuffledLeft = [...sourceData].sort(() => Math.random() - 0.5).slice(0, 6)
@@ -14,16 +15,6 @@ export default function KanaMatch({ data }) {
   const [selectedRight, setSelectedRight] = useState(null)
   const [matched, setMatched] = useState([])
   const [round, setRound] = useState(1)
-  const [dataRef, setDataRef] = useState(data)
-
-  if (dataRef !== data) {
-    setDataRef(data)
-    setRoundData(pickRound(data))
-    setMatched([])
-    setSelectedLeft(null)
-    setSelectedRight(null)
-    setRound(1)
-  }
 
   const initRound = (sourceData) => {
     setRoundData(pickRound(sourceData))
@@ -48,11 +39,13 @@ export default function KanaMatch({ data }) {
     if (!left || !right) return
 
     if (left.id === right.id) {
+      playCorrect()
       setMatched((prev) => [...prev, left.id])
       setSelectedLeft(null)
       setSelectedRight(null)
 
       if (matched.length + 1 === leftItems.length) {
+        playComplete()
         setTimeout(() => {
           const remaining = data.filter((d) => !matched.includes(d.id))
           if (remaining.length > 0) {
@@ -62,6 +55,7 @@ export default function KanaMatch({ data }) {
         }, 500)
       }
     } else {
+      playWrong()
       setTimeout(() => {
         setSelectedLeft(null)
         setSelectedRight(null)
@@ -70,6 +64,7 @@ export default function KanaMatch({ data }) {
   }
 
   const handleReset = () => {
+    playTap()
     setRound(1)
     initRound(data)
   }

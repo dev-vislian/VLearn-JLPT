@@ -91,10 +91,21 @@ export function getUnitData(level, module, unitId) {
     const l = level?.toLowerCase()
     const m = module?.toLowerCase()
     const u = unitId?.toLowerCase()
-    const data = dataRegistry[l]?.[m]?.[u] || dataRegistry[l]?.[m]?.['unit-1'] || []
-    return data
+    return dataRegistry[l]?.[m]?.[u] || []
   } catch (e) {
     console.error('Error fetching unit data:', e)
     return []
   }
 }
+
+export function getUnitCounts(level) {
+  const l = level?.toLowerCase()
+  const levelData = dataRegistry[l]
+  if (!levelData) return null
+
+  return Object.fromEntries(
+    Object.entries(levelData).map(([module, units]) => [module, Object.keys(units).length])
+  )
+}
+
+

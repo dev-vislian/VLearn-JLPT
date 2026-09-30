@@ -1,19 +1,18 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { CheckCircle2, XCircle } from 'lucide-react'
 import { shuffleArray } from '../utils/helper.js'
+import { playCorrect, playWrong, playComplete, playTap } from '../utils/sound.js'
 
 export default function QuizView({ data, module, onComplete, showFurigana }) {
   const [questionIndex, setQuestionIndex] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState(null)
   const [isCorrect, setIsCorrect] = useState(null)
   const [score, setScore] = useState(0)
-  const [lastIndex, setLastIndex] = useState(questionIndex)
+  const advanceTimer = useRef(null)
 
-  if (lastIndex !== questionIndex) {
-    setLastIndex(questionIndex)
-    setSelectedAnswer(null)
-    setIsCorrect(null)
-  }
+  useEffect(() => {
+    return () => clearTimeout(advanceTimer.current)
+  }, [])
 
   const current = data[questionIndex]
 
@@ -33,13 +32,22 @@ export default function QuizView({ data, module, onComplete, showFurigana }) {
 
     if (correct) {
       setScore((prev) => prev + 1)
+      playCorrect()
+    } else {
+      playWrong()
     }
 
-    setTimeout(() => {
+    const nextScore = score + (correct ? 1 : 0)
+
+    clearTimeout(advanceTimer.current)
+    advanceTimer.current = setTimeout(() => {
       if (questionIndex + 1 < data.length) {
         setQuestionIndex((prev) => prev + 1)
+        setSelectedAnswer(null)
+        setIsCorrect(null)
       } else {
-        if (score + (correct ? 1 : 0) >= data.length * 0.8) {
+        if (nextScore >= data.length * 0.8) {
+          playComplete()
           onComplete()
         }
       }
@@ -47,11 +55,15 @@ export default function QuizView({ data, module, onComplete, showFurigana }) {
   }
 
   const handleRestart = () => {
+    clearTimeout(advanceTimer.current)
+    playTap()
     setQuestionIndex(0)
     setScore(0)
     setSelectedAnswer(null)
     setIsCorrect(null)
   }
+
+  if (!data.length || !current) return <div className="text-center py-12 text-zen-text">Memuat soal...</div>
 
   return (
     <div className="flex flex-col items-center">

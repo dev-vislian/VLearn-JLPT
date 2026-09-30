@@ -9,21 +9,12 @@ function pickRound(sourceData) {
 
 export default function MatchView({ data, module, showFurigana }) {
   const [roundData, setRoundData] = useState(() => pickRound(data))
-  const { left: leftItems, right: rightItems } = roundData
   const [selectedLeft, setSelectedLeft] = useState(null)
   const [selectedRight, setSelectedRight] = useState(null)
   const [matched, setMatched] = useState([])
   const [round, setRound] = useState(1)
-  const [dataRef, setDataRef] = useState(data)
 
-  if (dataRef !== data) {
-    setDataRef(data)
-    setRoundData(pickRound(data))
-    setMatched([])
-    setSelectedLeft(null)
-    setSelectedRight(null)
-    setRound(1)
-  }
+  const { left: leftItems, right: rightItems } = roundData
 
   function initRound(sourceData) {
     setRoundData(pickRound(sourceData))

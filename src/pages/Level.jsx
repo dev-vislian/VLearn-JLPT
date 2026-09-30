@@ -1,128 +1,99 @@
-import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Folder, RotateCcw } from 'lucide-react'
+import { ArrowLeft, LayoutGrid, BookOpen, FileText } from 'lucide-react'
 import { useApp } from '../contexts/AppContext.jsx'
+import { getUnitCounts } from '../data/registry.js'
 
 const modules = [
-  { id: 'kanji', label: '漢字', subtitle: 'Kanji' },
-  { id: 'vocab', label: '語彙', subtitle: 'Kosakata' },
-  { id: 'grammar', label: '文法', subtitle: 'Tata Bahasa' },
+  { id: 'kanji', label: 'Kanji', icon: LayoutGrid },
+  { id: 'vocab', label: 'Kosakata', icon: BookOpen },
+  { id: 'grammar', label: 'Tata Bahasa', icon: FileText },
 ]
 
-const modulesByLevel = {
-  n5: { kanji: 5, vocab: 16, grammar: 16 },
-  n4: { kanji: 6, vocab: 6, grammar: 5 },
-  n3: { kanji: 7, vocab: 7, grammar: 6 },
-  n2: { kanji: 8, vocab: 8, grammar: 7 },
-  n1: { kanji: 10, vocab: 10, grammar: 8 },
-}
+const RADIUS = 26
+const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 
-const moduleLabels = {
-  kanji: { label: 'Kanji', icon: '漢', color: 'bg-[#fde2e4] border-[#f4a2aa] text-[#7a3b3b]' },
-  vocab: { label: 'Kosakata', icon: '語', color: 'bg-[#e2f0fd] border-[#a3c9e2] text-[#3b5a7a]' },
-  grammar: { label: 'Tata Bahasa', icon: '文', color: 'bg-[#f5e2fd] border-[#d4a5ff] text-[#5e3b7a]' },
+function Enso({ percent }) {
+  const dash = (percent / 100) * CIRCUMFERENCE
+  const isDone = percent >= 100
+
+  return (
+    <div className="relative w-16 h-16 flex-shrink-0">
+      <svg viewBox="0 0 64 64" className="w-full h-full -rotate-90">
+        <circle
+          cx="32" cy="32" r={RADIUS}
+          fill="none"
+          stroke="var(--zen-border)"
+          strokeWidth="4"
+          strokeLinecap="round"
+        />
+        <circle
+          cx="32" cy="32" r={RADIUS}
+          fill="none"
+          stroke="var(--zen-seal)"
+          strokeWidth="4"
+          strokeLinecap="round"
+          strokeDasharray={`${dash} ${CIRCUMFERENCE}`}
+          style={{ transition: 'stroke-dasharray 0.8s ease-out' }}
+        />
+      </svg>
+      <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-zen-text-dark">
+        {percent}%
+      </span>
+      {isDone && <span className="absolute -bottom-1 -right-1 text-sm" title="全部完了">✦</span>}
+    </div>
+  )
 }
 
 export default function Level() {
   const { level } = useParams()
-  const { progress, resetLevelProgress, showFurigana, toggleFurigana } = useApp()
-  const [activeModule, setActiveModule] = useState('kanji')
+  const { progress } = useApp()
 
   const levelNum = level.toUpperCase()
-  const unitCount = modulesByLevel[level]?.[activeModule] || 5
+  const unitCounts = getUnitCounts(level)
 
-  const getUnitProgress = (unitId) => {
-    const data = progress[level]?.[activeModule]?.[unitId]
-    if (!data) return 0
-    return data.completed ? 100 : 0
-  }
-
-  const totalUnits = unitCount
-  const completedUnits = Object.keys(progress[level]?.[activeModule] || {}).filter(
-    (unitId) => progress[level]?.[activeModule]?.[unitId]?.completed
-  ).length
-
-  const handleResetLevel = () => {
-    if (window.confirm(`Reset semua progress di level ${levelNum}?`)) {
-      resetLevelProgress(level)
-    }
+  const getModuleProgress = (module) => {
+    const total = unitCounts?.[module] || 0
+    const done = Object.keys(progress[level]?.[module] || {}).filter(
+      (unitId) => progress[level]?.[module]?.[unitId]?.completed
+    ).length
+    return { done, total, percent: total ? Math.round((done / total) * 100) : 0 }
   }
 
   return (
     <div className="min-h-screen bg-zen-bg">
-      <div className="max-w-6xl mx-auto p-4 md:p-8">
+      <div className="max-w-4xl mx-auto p-4 md:p-8">
         <Link to="/" className="inline-flex items-center gap-2 text-zen-accent-dark hover:text-zen-accent mb-8 transition-colors">
           <ArrowLeft size={20} />
           Kembali
         </Link>
 
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-4xl font-semibold text-zen-text-dark mb-2">{levelNum}</h1>
-            <p className="text-zen-text">{completedUnits} / {totalUnits} unit selesai</p>
-          </div>
+        <h1 className="text-4xl font-bold text-zen-text-dark mb-10 font-display">{levelNum} - Materi</h1>
 
-          <div className="flex items-center gap-4">
-            <button
-              onClick={toggleFurigana}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                showFurigana
-                  ? 'bg-zen-accent text-white'
-                  : 'bg-zen-card border border-zen-border text-zen-text-dark'
-              }`}
-            >
-              Furigana {showFurigana ? 'ON' : 'OFF'}
-            </button>
-
-            <button
-              onClick={handleResetLevel}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-zen-text border border-zen-border hover:border-zen-error hover:text-zen-error transition-all"
-            >
-              <RotateCcw size={16} />
-              Reset
-            </button>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap gap-3 mb-8">
-          {modules.map((mod) => (
-            <button
-              key={mod.id}
-              onClick={() => setActiveModule(mod.id)}
-              className={`px-6 py-3 rounded-lg font-medium transition-all ${
-                activeModule === mod.id
-                  ? 'bg-zen-accent-dark text-white shadow-lg'
-                  : 'bg-zen-card border border-zen-border text-zen-text-dark hover:border-zen-accent'
-              }`}
-            >
-              <span className="text-lg mr-2">{mod.label}</span>
-              {mod.subtitle}
-            </button>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {Array.from({ length: unitCount }, (_, i) => {
-            const unitId = `unit-${i + 1}`
-            const unitProgress = getUnitProgress(unitId)
-            const unitColor = moduleLabels[activeModule]?.color || 'bg-zen-bg border-zen-border text-zen-text-dark'
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {modules.map((mod) => {
+            const Icon = mod.icon
+            const { done, total, percent } = getModuleProgress(mod.id)
 
             return (
               <Link
-                key={unitId}
-                to={`/${level}/${activeModule}/${unitId}`}
-                className={`${unitColor} border rounded-xl p-5 hover:scale-105 transition-all hover:shadow-lg`}
+                key={mod.id}
+                to={`/${level}/${mod.id}`}
+                className="jp-card bg-zen-card border-2 border-zen-border p-8 hover:border-zen-accent group"
               >
-                <Folder size={24} className="mb-3 opacity-60" />
-                <div className="text-lg font-semibold mb-1">Unit {i + 1}</div>
-                <div className="text-sm opacity-70">{activeModule === 'kanji' ? '20' : activeModule === 'vocab' ? '50' : '5'} Item</div>
-
-                <div className="mt-4 w-full bg-white/30 rounded-full h-1">
-                  <div
-                    className="bg-white h-1 rounded-full transition-all duration-500"
-                    style={{ width: `${unitProgress}%` }}
-                  />
+                <div className="flex items-center gap-5 mb-6">
+                  <Enso percent={percent} />
+                  <div className={`w-11 h-11 rounded-xl bg-zen-accent-light text-zen-accent flex items-center justify-center`}>
+                    <Icon size={22} />
+                  </div>
                 </div>
+
+                <h2 className="text-2xl font-bold text-zen-text-dark mb-1 font-display group-hover:text-zen-accent transition-colors">
+                  {mod.label}
+                </h2>
+                <p className="text-sm text-zen-text mb-4">
+                  {done} / {total} unit selesai
+                </p>
+                <span className="text-zen-accent font-bold group-hover:underline">Buka Materi →</span>
               </Link>
             )
           })}

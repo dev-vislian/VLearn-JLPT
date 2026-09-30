@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { BarChart3, PlayCircle, Timer } from 'lucide-react'
+import { BarChart3, PlayCircle, Timer, Volume2, VolumeX } from 'lucide-react'
 import { useApp } from '../contexts/AppContext.jsx'
+import { isSoundEnabled, setSoundEnabled } from '../utils/sound.js'
 
 const levels = [
   {
@@ -10,30 +12,29 @@ const levels = [
     description: 'Pelajari dasar tulisan Jepang dengan kartu & kuis interaktif',
     icon: 'あ',
     badge: 'Dasar',
+    available: true,
   },
-  { id: 'n5', title: 'N5', subtitle: 'Level Pemula', description: 'Pengenalan dasar kosakata, kanji, & tata bahasa', badge: 'Pemula' },
-  { id: 'n4', title: 'N4', subtitle: 'Level Dasar', description: 'Memahami percakapan & situasi sehari-hari', badge: 'Dasar' },
-  { id: 'n3', title: 'N3', subtitle: 'Level Menengah', description: 'Memahami teks dan situasi bahasa Jepang menengah', badge: 'Menengah' },
-  { id: 'n2', title: 'N2', subtitle: 'Level Atas', description: 'Berkomunikasi lancar dalam berbagai situasi', badge: 'Mahir' },
-  { id: 'n1', title: 'N1', subtitle: 'Level Lanjut', description: 'Penguasaan bahasa Jepang tingkat tinggi setara penutur asli', badge: 'Expert' },
+  { id: 'n5', title: 'N5', subtitle: 'Level Pemula', description: 'Pengenalan dasar kosakata, kanji, & tata bahasa', badge: 'Pemula', available: true },
+  { id: 'n4', title: 'N4', subtitle: 'Level Dasar', description: 'Memahami percakapan & situasi sehari-hari', badge: 'Segera Hadir', available: false },
+  { id: 'n3', title: 'N3', subtitle: 'Level Menengah', description: 'Memahami teks dan situasi bahasa Jepang menengah', badge: 'Segera Hadir', available: false },
+  { id: 'n2', title: 'N2', subtitle: 'Level Atas', description: 'Berkomunikasi lancar dalam berbagai situasi', badge: 'Segera Hadir', available: false },
+  { id: 'n1', title: 'N1', subtitle: 'Level Lanjut', description: 'Penguasaan bahasa Jepang tingkat tinggi setara penutur asli', badge: 'Segera Hadir', available: false },
 ]
 
 export default function Landing() {
   const { progress } = useApp()
+  const [soundOn, setSoundOn] = useState(isSoundEnabled())
 
   const getTotalProgressPercent = () => {
-    let totalUnits = 0
+    let totalUnits = 37 // N5 has 5 kanji + 16 vocab + 16 grammar = 37 units total
     let completedTotal = 0
-    levels.forEach((level) => {
-      if (!progress[level.id]) return
-      Object.values(progress[level.id]).forEach((moduleData) => {
+    if (progress.n5) {
+      Object.values(progress.n5).forEach((moduleData) => {
         Object.values(moduleData).forEach((unitData) => {
-          totalUnits++
           if (unitData.completed) completedTotal++
         })
       })
-    })
-    if (totalUnits === 0) return 0
+    }
     return Math.round((completedTotal / totalUnits) * 100)
   }
 
@@ -50,20 +51,16 @@ export default function Landing() {
 
   const getLastActiveUnit = () => {
     let lastFound = null
-    levels.forEach((level) => {
-      if (level.id === 'kana') return
-      if (!progress[level.id]) return
+    if (progress.n5) {
       ['vocab', 'kanji', 'grammar'].forEach((mod) => {
-        if (!progress[level.id][mod]) return
-        Object.entries(progress[level.id][mod]).forEach(([uId, uData]) => {
-          if (!uData.completed) {
-            if (!lastFound) {
-              lastFound = { level: level.id, mod, unitId: uId }
-            }
+        if (!progress.n5[mod]) return
+        Object.entries(progress.n5[mod]).forEach(([uId, uData]) => {
+          if (!uData.completed && !lastFound) {
+            lastFound = { level: 'n5', mod, unitId: uId }
           }
         })
       })
-    })
+    }
     return lastFound || { level: 'n5', mod: 'vocab', unitId: 'unit-1' }
   }
 
@@ -93,17 +90,17 @@ export default function Landing() {
             />
           </div>
 
-          <h1 className="text-6xl md:text-7xl font-extrabold text-zen-text-dark mb-4 tracking-tight japanese-text">
+          <h1 className="text-6xl md:text-7xl font-extrabold text-zen-text-dark mb-4 tracking-tight font-display">
             VLearn
           </h1>
-<p className="text-xl md:text-2xl font-semibold text-zen-text mb-8 max-w-xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl font-semibold text-zen-text mb-8 max-w-xl mx-auto leading-relaxed">
             Yo, 皆さん! ⚡ Ini website belajar gua sendiri khusus buat persiapan JLPT. 🚀🔥
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-zen-text text-sm font-semibold">
             <div className="flex items-center gap-2 px-4 py-2 bg-zen-card border-2 border-zen-border rounded-2xl shadow-sm">
               <BarChart3 size={18} className="text-zen-accent-dark" />
-              <span>Progress: {totalPercent}% Selesai</span>
+              <span>Progress N5: {totalPercent}% Selesai</span>
             </div>
             <Link to={lastActiveLink} className="flex items-center gap-2 px-4 py-2 bg-zen-card border-2 border-zen-border rounded-2xl shadow-sm hover:border-zen-accent transition-all">
               <PlayCircle size={18} className="text-zen-accent-dark" />
@@ -113,6 +110,14 @@ export default function Landing() {
               <Timer size={18} />
               <span>Zen Mode</span>
             </Link>
+            <button
+              onClick={() => setSoundOn(setSoundEnabled(!soundOn))}
+              className="flex items-center gap-2 px-4 py-2 bg-zen-card border-2 border-zen-border rounded-2xl shadow-sm hover:border-zen-accent transition-all"
+              title={soundOn ? 'Matikan suara' : 'Nyalakan suara'}
+            >
+              {soundOn ? <Volume2 size={18} className="text-zen-accent-dark" /> : <VolumeX size={18} className="text-zen-text/50" />}
+              <span>Suara {soundOn ? 'ON' : 'OFF'}</span>
+            </button>
           </div>
         </section>
 
@@ -120,6 +125,39 @@ export default function Landing() {
           {levels.map((level) => {
             const completedUnits = getCompletedUnits(level.id)
             const href = level.id === 'kana' ? '/kana' : `/${level.id}`
+
+            if (!level.available) {
+              return (
+                <div
+                  key={level.id}
+                  className="bg-zen-card/60 border-2 border-zen-border/60 rounded-3xl p-6 text-left relative overflow-hidden shadow-sm opacity-60 cursor-not-allowed flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-4xl font-extrabold text-zen-text-dark/20">
+                        {level.title}
+                      </span>
+                      <span className="text-xs font-bold px-3 py-1 bg-amber-100 border border-amber-300 text-amber-800 rounded-full">
+                        {level.badge}
+                      </span>
+                    </div>
+
+                    <h2 className="text-2xl font-bold text-zen-text-dark/70 mb-1">
+                      {level.title}
+                    </h2>
+                    <p className="text-sm font-semibold text-zen-text/60 mb-2">{level.subtitle}</p>
+                    <p className="text-sm text-zen-text/60 leading-relaxed mb-6">{level.description}</p>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between text-xs font-bold text-zen-text/40 mb-3 pt-4 border-t border-zen-border/40">
+                      <span>Materi belum tersedia</span>
+                      <span>🔒</span>
+                    </div>
+                  </div>
+                </div>
+              )
+            }
 
             return (
               <Link
@@ -148,7 +186,7 @@ export default function Landing() {
 
                 <div>
                   <div className="flex items-center justify-between text-xs font-bold text-zen-text/70 mb-3 pt-4 border-t border-zen-border/60">
-                    <span>{completedUnits} unit selesai</span>
+                    <span>{level.id === 'kana' ? 'Dasar' : `${completedUnits} / 37 unit selesai`}</span>
                     <span className="text-zen-accent-dark group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
                       Mulai Belajar →
                     </span>

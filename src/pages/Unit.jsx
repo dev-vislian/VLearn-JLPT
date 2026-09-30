@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, BookOpen, Shuffle, HelpCircle, FileText } from 'lucide-react'
+import { ArrowLeft, BookOpen, Shuffle, HelpCircle, FileText, RotateCcw } from 'lucide-react'
 import { useApp } from '../contexts/AppContext.jsx'
 import { shuffleArray } from '../utils/helper.js'
 import { getUnitData } from '../data/registry.js'
@@ -24,27 +24,26 @@ const moduleLabels = {
   grammar: '文法',
 }
 
+function readSavedActivity(level, module, unitId) {
+  return localStorage.getItem(`unit-activity-${level}-${module}-${unitId}`) || 'summary'
+}
+
 export default function Unit() {
   const { level, module, unitId } = useParams()
-  const { bookmarks, toggleBookmark, showFurigana, updateProgress } = useApp()
-  const [activeActivity, setActiveActivity] = useState(() => {
-    const saved = localStorage.getItem(`unit-activity-${level}-${module}-${unitId}`)
-    return saved || 'summary'
-  })
-  const [lastParams, setLastParams] = useState(`${level}-${module}-${unitId}`)
+  const unitKey = `${level}/${module}/${unitId}`
 
-  const unitParams = `${level}-${module}-${unitId}`
+  return <UnitView key={unitKey} level={level} module={module} unitId={unitId} />
+}
+
+function UnitView({ level, module, unitId }) {
+  const { bookmarks, toggleBookmark, showFurigana, updateProgress, toggleFurigana, resetLevelProgress } = useApp()
+  const [savedActivity, setSavedActivity] = useState(() => readSavedActivity(level, module, unitId))
+
   const unitData = getUnitData(level, module, unitId)
   const shuffledData = useMemo(() => shuffleArray(unitData), [unitData])
 
-  if (lastParams !== unitParams) {
-    setLastParams(unitParams)
-    setActiveActivity(localStorage.getItem(`unit-activity-${level}-${module}-${unitId}`) || 'summary')
-  }
-
-  if (unitData.length === 0 && activeActivity !== 'summary') {
-    setActiveActivity('summary')
-  }
+  const hasData = unitData.length > 0
+  const activeActivity = hasData ? savedActivity : 'summary'
 
   useEffect(() => {
     localStorage.setItem(`unit-activity-${level}-${module}-${unitId}`, activeActivity)
@@ -54,7 +53,14 @@ export default function Unit() {
     updateProgress(level, module, unitId, { completed: true, completedAt: Date.now() })
   }
 
+  const handleResetLevel = () => {
+    if (window.confirm(`Reset semua progress di level ${level.toUpperCase()}?`)) {
+      resetLevelProgress(level)
+    }
+  }
+
   const levelLabel = level.toUpperCase()
+  const unitNumber = unitId?.replace('unit-', '')
 
   return (
     <div className="min-h-screen bg-zen-bg flex flex-col">
@@ -62,15 +68,42 @@ export default function Unit() {
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <Link to={`/${level}`} className="p-2 rounded-xl hover:bg-zen-bg transition-colors">
+              <Link to={`/${level}/${module}`} className="p-2 rounded-xl hover:bg-zen-bg transition-colors">
                 <ArrowLeft size={20} className="text-zen-accent-dark" />
               </Link>
               <div>
+                <div className="flex items-center gap-1.5 text-xs font-medium text-zen-text mb-0.5">
+                  <Link to="/" className="hover:text-zen-accent transition-colors">Beranda</Link>
+                  <span>/</span>
+                  <Link to={`/${level}`} className="hover:text-zen-accent transition-colors">{levelLabel}</Link>
+                  <span>/</span>
+                  <Link to={`/${level}/${module}`} className="hover:text-zen-accent transition-colors">{moduleLabels[module]}</Link>
+                  <span>/</span>
+                  <span className="text-zen-text-dark">Unit {unitNumber}</span>
+                </div>
                 <h1 className="text-xl md:text-2xl font-bold text-zen-text-dark leading-tight">
-                  {levelLabel} / {moduleLabels[module]}
+                  {levelLabel} / {moduleLabels[module]} / Unit {unitNumber}
                 </h1>
-                <p className="text-xs md:text-sm text-zen-text font-medium">Unit {unitId.replace('unit-', '')}</p>
               </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={toggleFurigana}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  showFurigana
+                    ? 'bg-zen-accent text-white'
+                    : 'bg-zen-card border border-zen-border text-zen-text-dark'
+                }`}
+              >
+                Furigana {showFurigana ? 'ON' : 'OFF'}
+              </button>
+              <button
+                onClick={handleResetLevel}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-zen-text border border-zen-border hover:border-zen-error hover:text-zen-error transition-all"
+              >
+                <RotateCcw size={16} />
+                Reset
+              </button>
             </div>
           </div>
         </div>
@@ -78,16 +111,17 @@ export default function Unit() {
 
       <div className="max-w-6xl mx-auto px-4 py-6 w-full flex flex-col md:flex-row md:items-center justify-between gap-4">
         <h2 className="text-lg font-semibold text-zen-text-dark hidden md:block">Aktivitas Latihan</h2>
-        
+
         <div className="flex flex-wrap gap-2">
           {activities.map((activity) => {
             const Icon = activity.icon
+            const isActive = activeActivity === activity.id
             return (
               <button
                 key={activity.id}
-                onClick={() => setActiveActivity(activity.id)}
+                onClick={() => setSavedActivity(activity.id)}
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 ${
-                  activeActivity === activity.id
+                  isActive
                     ? 'bg-zen-accent text-white shadow-lg shadow-zen-accent/20 scale-105'
                     : 'bg-zen-card border-2 border-zen-border text-zen-text-dark hover:border-zen-accent hover:bg-zen-accent/5'
                 }`}
@@ -101,7 +135,7 @@ export default function Unit() {
       </div>
 
       <div className="flex-1 max-w-6xl mx-auto px-4 py-6 w-full">
-        {unitData && unitData.length > 0 ? (
+        {hasData ? (
           <>
             {activeActivity === 'summary' && (
               <SummaryView
@@ -126,10 +160,17 @@ export default function Unit() {
             )}
           </>
         ) : (
-          <div className="text-center py-20">
+          <div className="text-center py-20 bg-zen-card rounded-3xl border-2 border-dashed border-zen-border">
             <div className="text-6xl mb-6">📚</div>
             <h3 className="text-2xl font-bold text-zen-text-dark mb-3">Data belum tersedia</h3>
-            <p className="text-zen-text">Unit ini akan segera ditambahkan.</p>
+            <p className="text-zen-text mb-6">Unit ini akan segera ditambahkan.</p>
+            <Link
+              to={`/${level}/${module}`}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zen-accent text-white font-semibold hover:bg-zen-accent-dark transition-all"
+            >
+              <ArrowLeft size={18} />
+              Kembali ke daftar unit
+            </Link>
           </div>
         )}
       </div>

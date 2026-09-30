@@ -37,6 +37,10 @@ export default function FlashcardView({ data, module }) {
     speak(text)
   }
 
+  if (!data.length || !current) {
+    return <div className="text-center py-12 text-zen-text">Memuat kartu...</div>
+  }
+
   return (
     <div className="flex flex-col items-center">
       <div className="relative w-full max-w-lg mb-6">
@@ -46,9 +50,9 @@ export default function FlashcardView({ data, module }) {
           </span>
         </div>
         
-        <button
+        <div
           onClick={() => setFlipped(!flipped)}
-          className={`w-full h-80 bg-zen-card border-2 border-zen-border rounded-3xl flex flex-col items-center justify-center p-6 hover:border-zen-accent transition-all duration-200 shadow-xl relative overflow-hidden group ${
+          className={`w-full h-80 bg-zen-card border-2 border-zen-border rounded-3xl flex flex-col items-center justify-center p-6 hover:border-zen-accent transition-all duration-200 shadow-xl relative overflow-hidden group cursor-pointer ${
             animating ? 'scale-95 opacity-0' : 'scale-100 opacity-100'
           }`}
         >
@@ -112,7 +116,7 @@ export default function FlashcardView({ data, module }) {
               )}
             </div>
           )}
-        </button>
+        </div>
       </div>
 
       <div className="flex items-center gap-6">
