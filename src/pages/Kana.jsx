@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft, Grid3x3, BookOpen, Shuffle, HelpCircle, Zap } from 'lucide-react'
 import { kanaData } from '../data/kana.js'
@@ -26,6 +26,9 @@ export default function Kana() {
     const saved = localStorage.getItem('kana-mode')
     return saved || 'grid'
   })
+  const [includeExtended, setIncludeExtended] = useState(() => {
+    return localStorage.getItem('kana-extended') === 'true'
+  })
 
   useEffect(() => {
     localStorage.setItem('kana-type', selectedType)
@@ -35,7 +38,17 @@ export default function Kana() {
     localStorage.setItem('kana-mode', selectedMode)
   }, [selectedMode])
 
-  const currentData = selectedType === 'hiragana' ? kanaData.hiragana : kanaData.katakana
+  useEffect(() => {
+    localStorage.setItem('kana-extended', JSON.stringify(includeExtended))
+  }, [includeExtended])
+
+  const allData = selectedType === 'hiragana' ? kanaData.hiragana : kanaData.katakana
+  const currentData = useMemo(
+    () => (includeExtended ? allData : allData.filter((k) => !k.extended)),
+    [allData, includeExtended]
+  )
+  const extendedCount = allData.length - allData.filter((k) => !k.extended).length
+  const shuffledData = useMemo(() => shuffleArray(currentData), [currentData])
 
   return (
     <div className="min-h-screen bg-zen-bg">
@@ -67,6 +80,25 @@ export default function Kana() {
                 ))}
               </div>
             </div>
+
+            {selectedType === 'katakana' && extendedCount > 0 && (
+              <div>
+                <label className="block text-sm font-medium text-zen-text-dark mb-3">Tambahan</label>
+                <button
+                  onClick={() => setIncludeExtended((prev) => !prev)}
+                  className={`px-5 py-3 rounded-lg font-medium transition-all ${
+                    includeExtended
+                      ? 'bg-zen-accent text-white shadow-lg'
+                      : 'bg-zen-card border border-zen-border text-zen-text-dark hover:border-zen-accent'
+                  }`}
+                >
+                  {includeExtended ? ' Sembunyikan' : 'Tampilkan'} Extended ({extendedCount})
+                </button>
+                <p className="text-xs text-zen-text/70 mt-2">
+                  ウィ・ウェ — hanya dipakai untuk kata dari bahasa Inggris
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -95,9 +127,9 @@ export default function Kana() {
 
         <div className="bg-zen-card rounded-xl p-6 md:p-8 border border-zen-border">
           {selectedMode === 'grid' && <KanaGrid data={currentData} />}
-          {selectedMode === 'flashcard' && <KanaFlashcard data={shuffleArray(currentData)} />}
-          {selectedMode === 'match' && <KanaMatch data={shuffleArray(currentData)} />}
-          {selectedMode === 'quiz' && <KanaQuiz data={shuffleArray(currentData)} />}
+          {selectedMode === 'flashcard' && <KanaFlashcard key={selectedType} data={shuffledData} />}
+          {selectedMode === 'match' && <KanaMatch key={selectedType} data={shuffledData} />}
+          {selectedMode === 'quiz' && <KanaQuiz key={selectedType} data={shuffledData} />}
           {selectedMode === 'rush' && <KanaRush key={selectedType} data={currentData} />}
         </div>
       </div>
