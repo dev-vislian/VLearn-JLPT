@@ -1,4 +1,4 @@
-# manabu-zen-jlpt (VLearn JLPT)
+#(VLearn JLPT)
 
 Aplikasi belajar bahasa Jepang untuk persiapan JLPT. Saat ini berisi materi level **N5** dengan berbagai mode belajar yang interaktif.
 
