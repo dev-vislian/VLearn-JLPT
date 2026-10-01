@@ -244,3 +244,13 @@ a:focus-visible {
   h2 { @apply text-2xl; }
   h3 { @apply text-lg; }
 }
+
+/* Horizontal scroll tanpa bar kasar (untuk tab aktivitas di HP) */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

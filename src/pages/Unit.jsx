@@ -18,12 +18,6 @@ const activities = [
   { id: 'matome', label: 'Matome', icon: FileText },
 ]
 
-const moduleLabels = {
-  kanji: '漢字',
-  vocab: '語彙',
-  grammar: '文法',
-}
-
 function readSavedActivity(level, module, unitId) {
   return localStorage.getItem(`unit-activity-${level}-${module}-${unitId}`) || 'summary'
 }
@@ -82,25 +76,27 @@ function UnitView({ level, module, unitId }) {
       <div className="max-w-6xl mx-auto px-4 py-6 w-full flex flex-col md:flex-row md:items-center justify-between gap-4">
         <h2 className="text-lg font-semibold text-zen-text-dark hidden md:block">Aktivitas Latihan</h2>
 
-        <div className="flex flex-wrap gap-2">
-          {activities.map((activity) => {
-            const Icon = activity.icon
-            const isActive = activeActivity === activity.id
-            return (
-              <button
-                key={activity.id}
-                onClick={() => setSavedActivity(activity.id)}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 ${
-                  isActive
-                    ? 'bg-zen-accent text-white shadow-lg shadow-zen-accent/20 scale-105'
-                    : 'bg-zen-card border-2 border-zen-border text-zen-text-dark hover:border-zen-accent hover:bg-zen-accent/5'
-                }`}
-              >
-                <Icon size={18} />
-                <span className="hidden sm:inline">{activity.label}</span>
-              </button>
-            )
-          })}
+        <div className="-mx-4 px-4 md:mx-0 md:px-0 overflow-x-auto scrollbar-none">
+          <div className="flex gap-2 w-max min-w-full md:w-auto">
+            {activities.map((activity) => {
+              const Icon = activity.icon
+              const isActive = activeActivity === activity.id
+              return (
+                <button
+                  key={activity.id}
+                  onClick={() => setSavedActivity(activity.id)}
+                  className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 whitespace-nowrap ${
+                    isActive
+                      ? 'bg-zen-accent text-white shadow-lg shadow-zen-accent/20'
+                      : 'bg-zen-card border-2 border-zen-border text-zen-text-dark hover:border-zen-accent hover:bg-zen-accent/5'
+                  }`}
+                >
+                  <Icon size={18} />
+                  <span className="text-sm sm:text-base">{activity.label}</span>
+                </button>
+              )
+            })}
+          </div>
         </div>
       </div>
 
@@ -111,6 +107,8 @@ function UnitView({ level, module, unitId }) {
               <SummaryView
                 data={unitData}
                 module={module}
+                level={level}
+                unitId={unitId}
                 showFurigana={showFurigana}
                 bookmarks={bookmarks}
                 onToggleBookmark={toggleBookmark}

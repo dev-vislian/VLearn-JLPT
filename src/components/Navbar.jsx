@@ -1,10 +1,17 @@
+import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Home, Heart, Zap, Moon, Sun } from 'lucide-react'
+import { Home, Heart, Zap, Moon, Sun, Volume2, VolumeX } from 'lucide-react'
 import { useApp } from '../contexts/AppContext.jsx'
+import { isSoundEnabled, setSoundEnabled } from '../utils/sound.js'
 
 export default function Navbar() {
   const location = useLocation()
   const { theme, toggleTheme } = useApp()
+  const [soundOn, setSoundOn] = useState(() => isSoundEnabled())
+
+  const handleSoundToggle = () => {
+    setSoundOn(setSoundEnabled(!soundOn))
+  }
 
   const isActive = (path) => location.pathname === path
 
@@ -44,6 +51,13 @@ export default function Navbar() {
             >
               {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
             </button>
+            <button
+              onClick={handleSoundToggle}
+              className="p-2 rounded-lg text-zen-text-dark hover:bg-zen-accent/10 transition-all duration-300"
+              title={soundOn ? 'Matikan suara' : 'Nyalakan suara'}
+            >
+              {soundOn ? <Volume2 size={18} /> : <VolumeX size={18} className="text-zen-text/50" />}
+            </button>
           </div>
 
           <div className="md:hidden flex items-center gap-1">
@@ -66,6 +80,13 @@ export default function Navbar() {
               title={theme === 'light' ? 'Mode Gelap' : 'Mode Terang'}
             >
               {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+            </button>
+            <button
+              onClick={handleSoundToggle}
+              className="p-2 rounded-lg text-zen-text-dark hover:bg-zen-accent/10 transition-all duration-300"
+              title={soundOn ? 'Matikan suara' : 'Nyalakan suara'}
+            >
+              {soundOn ? <Volume2 size={18} /> : <VolumeX size={18} className="text-zen-text/50" />}
             </button>
           </div>
         </div>

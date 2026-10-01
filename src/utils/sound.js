@@ -7,7 +7,7 @@
 const STORAGE_KEY = 'manabu_sound'
 
 let audioCtx = null
-let enabled = localStorage.getItem(STORAGE_KEY) !== 'false'
+let enabled = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY) !== 'false' : true
 
 export function isSoundEnabled() {
   return enabled
@@ -15,7 +15,9 @@ export function isSoundEnabled() {
 
 export function setSoundEnabled(value) {
   enabled = value
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(value))
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(value))
+  }
   return enabled
 }
 

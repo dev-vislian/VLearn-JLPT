@@ -17,23 +17,21 @@ const DEFAULT_ZEN_SETTINGS = {
   playlist: 'lofi',
 }
 
+function safeParse(key, fallback) {
+  try {
+    const stored = localStorage.getItem(key)
+    return stored ? JSON.parse(stored) : fallback
+  } catch (e) {
+    console.warn(`Gagal parse ${key}, pakai nilai default:`, e)
+    return fallback
+  }
+}
+
 export function AppProvider({ children }) {
-  const [progress, setProgress] = useState(() => {
-    const storedProgress = localStorage.getItem(STORAGE_KEYS.progress)
-    return storedProgress ? JSON.parse(storedProgress) : {}
-  })
-  const [bookmarks, setBookmarks] = useState(() => {
-    const storedBookmarks = localStorage.getItem(STORAGE_KEYS.bookmarks)
-    return storedBookmarks ? JSON.parse(storedBookmarks) : []
-  })
-  const [showFurigana, setShowFurigana] = useState(() => {
-    const storedFurigana = localStorage.getItem(STORAGE_KEYS.furigana)
-    return storedFurigana ? JSON.parse(storedFurigana) : true
-  })
-  const [zenSettings, setZenSettings] = useState(() => {
-    const storedZenSettings = localStorage.getItem(STORAGE_KEYS.zenSettings)
-    return storedZenSettings ? JSON.parse(storedZenSettings) : DEFAULT_ZEN_SETTINGS
-  })
+  const [progress, setProgress] = useState(() => safeParse(STORAGE_KEYS.progress, {}))
+  const [bookmarks, setBookmarks] = useState(() => safeParse(STORAGE_KEYS.bookmarks, []))
+  const [showFurigana, setShowFurigana] = useState(() => safeParse(STORAGE_KEYS.furigana, true))
+  const [zenSettings, setZenSettings] = useState(() => safeParse(STORAGE_KEYS.zenSettings, DEFAULT_ZEN_SETTINGS))
   const [theme, setTheme] = useState(() => {
     const storedTheme = localStorage.getItem(STORAGE_KEYS.theme)
     if (storedTheme) return storedTheme

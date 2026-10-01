@@ -12,11 +12,16 @@ export default function KanaQuiz({ data }) {
   const current = data[questionIndex]
 
   const options = useMemo(() => {
+    if (!data || !data.length || !data[questionIndex]) return []
     const correct = data[questionIndex]
     const wrong = data.filter((d) => d.id !== correct.id)
     const shuffledWrong = shuffleArray(wrong).slice(0, 3)
     return shuffleArray([correct, ...shuffledWrong])
   }, [data, questionIndex])
+
+  if (!data || !data.length || !current) {
+    return <div className="text-center py-12 text-zen-text">Data tidak tersedia</div>
+  }
 
   const handleAnswer = (option) => {
     if (selectedAnswer) return
@@ -63,14 +68,14 @@ export default function KanaQuiz({ data }) {
           <span>Skor: {score}</span>
         </div>
 
-        <div className="bg-zen-card border border-zen-border rounded-xl p-8 flex flex-col items-center">
+        <div className="bg-zen-card border border-zen-border rounded-xl p-6 sm:p-8 flex flex-col items-center">
           <button
             onClick={handleAudio}
             className="p-3 rounded-full border border-zen-border hover:border-zen-accent hover:bg-zen-accent/10 mb-4 transition-colors"
           >
             <Volume2 size={24} />
           </button>
-          <div className="text-6xl font-medium text-zen-text-dark mb-6">{current.character}</div>
+          <div className="text-5xl sm:text-6xl font-medium text-zen-text-dark mb-6 break-words text-center">{current.character}</div>
           <div className="text-sm text-zen-text/60">Pilih cara baca yang benar</div>
         </div>
 
@@ -80,7 +85,7 @@ export default function KanaQuiz({ data }) {
             const isOptionCorrect = option.id === current.id
             const showResult = selectedAnswer && (isSelected || isOptionCorrect)
 
-             let buttonClass = 'p-4 rounded-lg font-medium transition-all border-2 '
+             let buttonClass = 'p-4 rounded-lg font-medium transition-all border-2 text-sm sm:text-base break-words min-w-0 '
              if (isSelected && isCorrect === true) {
                buttonClass += 'bg-zen-success text-white border-zen-success'
              } else if (isSelected && isCorrect === false) {
@@ -88,7 +93,7 @@ export default function KanaQuiz({ data }) {
              } else if (showResult && isOptionCorrect) {
                buttonClass += 'bg-zen-success text-white border-zen-success'
              } else {
-               buttonClass += 'bg-zen-card border-zen-border text-zen-text-dark hover:border-zen-accent'
+               buttonClass += 'bg-zen-card border-2 border-zen-border text-zen-text-dark hover:border-zen-accent'
              }
 
             return (
@@ -98,7 +103,7 @@ export default function KanaQuiz({ data }) {
                 disabled={selectedAnswer !== null}
                 className={buttonClass}
               >
-                {option.romaji}
+                <span className="break-words">{option.romaji}</span>
               </button>
             )
           })}

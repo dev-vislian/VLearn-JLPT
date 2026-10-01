@@ -34,13 +34,14 @@ export default function MatchView({ data, module, showFurigana }) {
     if (!left || !right || matched.includes(left.id)) return
 
     if (left.id === right.id) {
-      setMatched((prev) => [...prev, left.id])
+      const newMatched = [...matched, left.id]
+      setMatched(newMatched)
       setSelectedLeft(null)
       setSelectedRight(null)
 
-      if (matched.length + 1 === leftItems.length) {
+      if (newMatched.length === leftItems.length) {
         setTimeout(() => {
-          const remaining = data.filter((d) => !matched.includes(d.id))
+          const remaining = data.filter((d) => !newMatched.includes(d.id))
           if (remaining.length > 0) {
             setRound((prev) => prev + 1)
             initRound(remaining)
@@ -70,7 +71,7 @@ export default function MatchView({ data, module, showFurigana }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
         <div>
           <div className="text-xs font-semibold uppercase tracking-wider text-zen-text text-center mb-4">
             {module === 'grammar' ? 'Pola / Kategori' : 'Karakter / Kanji'}
@@ -88,7 +89,7 @@ export default function MatchView({ data, module, showFurigana }) {
                     handleMatch(item, selectedRight)
                   }}
                   disabled={isMatched}
-                  className={`w-full min-h-[76px] px-4 py-3 rounded-xl border-2 flex items-center justify-center transition-all ${
+                  className={`w-full min-w-0 min-h-[76px] px-3 sm:px-4 py-3 rounded-xl border-2 flex items-center justify-center transition-all ${
                     isMatched
                       ? 'bg-zen-success/40 border-zen-success text-zen-text-dark/50'
                       : isSelected
@@ -96,8 +97,8 @@ export default function MatchView({ data, module, showFurigana }) {
                       : 'bg-zen-card border-zen-border text-zen-text-dark hover:border-zen-accent hover:shadow-md'
                   }`}
                 >
-                  <div className="flex flex-col items-center gap-1">
-                    <span className="font-bold text-lg leading-none">{getDisplayText(item)}</span>
+                  <div className="flex flex-col items-center gap-1 min-w-0 max-w-full">
+                    <span className="font-bold text-lg leading-tight break-words text-center">{getDisplayText(item)}</span>
                     {showFurigana && item.romaji && (
                       <span className="text-sm text-zen-text/70 font-normal">{item.romaji}</span>
                     )}
@@ -125,7 +126,7 @@ export default function MatchView({ data, module, showFurigana }) {
                     handleMatch(selectedLeft, item)
                   }}
                   disabled={isMatched}
-                  className={`w-full min-h-[76px] px-4 py-3 rounded-xl border-2 flex items-center justify-center text-center transition-all ${
+                  className={`w-full min-w-0 min-h-[76px] px-3 sm:px-4 py-3 rounded-xl border-2 flex items-center justify-center text-center transition-all ${
                     isMatched
                       ? 'bg-zen-success/40 border-zen-success text-zen-text-dark/50'
                       : isSelected
@@ -133,7 +134,7 @@ export default function MatchView({ data, module, showFurigana }) {
                       : 'bg-zen-card border-zen-border text-zen-text-dark hover:border-zen-accent hover:shadow-md'
                   }`}
                 >
-                  <span className="font-medium text-base leading-snug">{item.meaning}</span>
+                  <span className="font-medium text-sm sm:text-base leading-snug break-words min-w-0">{item.meaning}</span>
                 </button>
               )
             })}

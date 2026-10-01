@@ -40,14 +40,15 @@ export default function KanaMatch({ data }) {
 
     if (left.id === right.id) {
       playCorrect()
-      setMatched((prev) => [...prev, left.id])
+      const newMatched = [...matched, left.id]
+      setMatched(newMatched)
       setSelectedLeft(null)
       setSelectedRight(null)
 
-      if (matched.length + 1 === leftItems.length) {
+      if (newMatched.length === leftItems.length) {
         playComplete()
         setTimeout(() => {
-          const remaining = data.filter((d) => !matched.includes(d.id))
+          const remaining = data.filter((d) => !newMatched.includes(d.id))
           if (remaining.length > 0) {
             setRound((prev) => prev + 1)
             initRound(remaining)
@@ -84,14 +85,14 @@ export default function KanaMatch({ data }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-8">
+      <div className="grid grid-cols-2 gap-3 sm:gap-8">
         <div className="flex flex-col gap-3">
           {leftItems.map((item) => (
             <button
               key={`left-${item.id}`}
               onClick={() => handleLeftClick(item)}
               disabled={matched.includes(item.id)}
-              className={`p-4 rounded-xl border-2 text-3xl font-bold transition-all h-20 flex items-center justify-center ${
+              className={`p-3 sm:p-4 rounded-xl border-2 text-3xl font-bold transition-all min-h-20 flex items-center justify-center ${
                 matched.includes(item.id)
                   ? 'bg-zen-success/20 border-zen-success text-zen-text-dark/50'
                   : selectedLeft?.id === item.id
@@ -110,7 +111,7 @@ export default function KanaMatch({ data }) {
               key={`right-${item.id}`}
               onClick={() => handleRightClick(item)}
               disabled={matched.includes(item.id)}
-              className={`p-4 rounded-xl border-2 text-lg font-bold transition-all h-20 flex items-center justify-center ${
+              className={`p-3 sm:p-4 rounded-xl border-2 text-base sm:text-lg font-bold transition-all min-h-20 flex items-center justify-center break-words ${
                 matched.includes(item.id)
                   ? 'bg-zen-success/20 border-zen-success text-zen-text-dark/50'
                   : selectedRight?.id === item.id

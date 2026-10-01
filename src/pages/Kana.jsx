@@ -39,7 +39,7 @@ export default function Kana() {
   }, [selectedMode])
 
   useEffect(() => {
-    localStorage.setItem('kana-extended', JSON.stringify(includeExtended))
+    localStorage.setItem('kana-extended', includeExtended ? 'true' : 'false')
   }, [includeExtended])
 
   const allData = selectedType === 'hiragana' ? kanaData.hiragana : kanaData.katakana

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Search, Star, Volume2 } from 'lucide-react'
 import { speak } from '../utils/helper.js'
 
-export default function SummaryView({ data, module, showFurigana, bookmarks, onToggleBookmark }) {
+export default function SummaryView({ data, module, level, unitId, showFurigana, bookmarks, onToggleBookmark }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterBookmark, setFilterBookmark] = useState(false)
 
@@ -77,7 +77,7 @@ export default function SummaryView({ data, module, showFurigana, bookmarks, onT
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
-                    onToggleBookmark(item.id, item)
+                    onToggleBookmark(item.id, { ...item, level, module, unitId })
                   }}
                   className={`p-2 rounded-xl border-2 transition-all shadow-sm group-hover:scale-110 ${
                     isBookmarked

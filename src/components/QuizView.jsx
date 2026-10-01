@@ -17,6 +17,7 @@ export default function QuizView({ data, module, onComplete, showFurigana }) {
   const current = data[questionIndex]
 
   const options = useMemo(() => {
+    if (!data || !data.length || !data[questionIndex]) return []
     const correct = data[questionIndex]
     const wrong = data.filter((d) => d.id !== correct.id)
     const shuffledWrong = shuffleArray(wrong).slice(0, 3)
@@ -63,7 +64,7 @@ export default function QuizView({ data, module, onComplete, showFurigana }) {
     setIsCorrect(null)
   }
 
-  if (!data.length || !current) return <div className="text-center py-12 text-zen-text">Memuat soal...</div>
+  if (!data || !data.length || !current) return <div className="text-center py-12 text-zen-text">Memuat soal...</div>
 
   return (
     <div className="flex flex-col items-center">
@@ -73,8 +74,8 @@ export default function QuizView({ data, module, onComplete, showFurigana }) {
           <span>Skor: {score}</span>
         </div>
 
-        <div className="bg-zen-card border border-zen-border rounded-xl p-8 mb-6 text-center">
-          <div className="text-4xl font-medium text-zen-text-dark mb-4">
+        <div className="bg-zen-card border border-zen-border rounded-xl p-6 sm:p-8 mb-6 text-center">
+          <div className="text-3xl sm:text-4xl font-medium text-zen-text-dark mb-4 break-words">
             {module === 'grammar' ? current.pattern : module === 'vocab' && !showFurigana ? current.character?.split('（')[0] : current.character}
           </div>
           {showFurigana && current.romaji && (
@@ -89,7 +90,7 @@ export default function QuizView({ data, module, onComplete, showFurigana }) {
             const isOptionCorrect = option.id === current.id
             const showResult = selectedAnswer && (isSelected || isOptionCorrect)
 
-            let buttonClass = 'p-4 rounded-lg font-medium transition-all text-left '
+            let buttonClass = 'p-4 rounded-lg font-medium transition-all text-left text-sm sm:text-base break-words min-w-0 '
             if (isSelected && isCorrect === true) {
               buttonClass += 'bg-zen-success text-white border-2 border-zen-success'
             } else if (isSelected && isCorrect === false) {
@@ -107,7 +108,7 @@ export default function QuizView({ data, module, onComplete, showFurigana }) {
                 disabled={selectedAnswer !== null}
                 className={buttonClass}
               >
-                {option.meaning}
+                <span className="break-words">{option.meaning}</span>
               </button>
             )
           })}

@@ -1,8 +1,10 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { BarChart3, PlayCircle, Timer, Volume2, VolumeX } from 'lucide-react'
+import { BarChart3, PlayCircle } from 'lucide-react'
 import { useApp } from '../contexts/AppContext.jsx'
-import { isSoundEnabled, setSoundEnabled } from '../utils/sound.js'
+import { getUnitCounts } from '../data/registry.js'
+
+const N5_COUNTS = getUnitCounts('n5') || {}
+const N5_TOTAL_UNITS = Object.values(N5_COUNTS).reduce((sum, count) => sum + count, 0)
 
 const levels = [
   {
@@ -23,12 +25,9 @@ const levels = [
 
 export default function Landing() {
   const { progress } = useApp()
-  const [soundOn, setSoundOn] = useState(isSoundEnabled())
-
-  console.log('Progress data:', progress)
 
   const getTotalProgressPercent = () => {
-    let totalUnits = 37 // N5 has 5 kanji + 16 vocab + 16 grammar = 37 units total
+    if (!N5_TOTAL_UNITS) return 0
     let completedTotal = 0
     if (progress.n5) {
       Object.values(progress.n5).forEach((moduleData) => {
@@ -37,7 +36,7 @@ export default function Landing() {
         })
       })
     }
-    return Math.round((completedTotal / totalUnits) * 100)
+    return Math.round((completedTotal / N5_TOTAL_UNITS) * 100)
   }
 
   const getCompletedUnits = (level) => {
@@ -53,15 +52,10 @@ export default function Landing() {
 
   const getLastActiveUnit = () => {
     const moduleOrder = ['kanji', 'vocab', 'grammar']
-    const moduleFiles = {
-      kanji: 5,
-      vocab: 16,
-      grammar: 16
-    }
 
     if (progress.n5) {
       for (const mod of moduleOrder) {
-        const totalUnits = moduleFiles[mod]
+        const totalUnits = N5_COUNTS[mod] || 0
         for (let i = 1; i <= totalUnits; i++) {
           const uId = `unit-${i}`
           if (!progress.n5[mod]?.[uId]?.completed) {
@@ -116,18 +110,6 @@ export default function Landing() {
               <PlayCircle size={18} className="text-zen-accent-dark" />
               <span>Lanjut: {lastActiveTitle}</span>
             </Link>
-            <Link to="/zen" className="flex items-center gap-2 px-4 py-2 bg-zen-accent text-white rounded-2xl shadow-md hover:bg-zen-accent-dark transition-all">
-              <Timer size={18} />
-              <span>Zen Mode</span>
-            </Link>
-            <button
-              onClick={() => setSoundOn(setSoundEnabled(!soundOn))}
-              className="flex items-center gap-2 px-4 py-2 bg-zen-card border-2 border-zen-border rounded-2xl shadow-sm hover:border-zen-accent transition-all"
-              title={soundOn ? 'Matikan suara' : 'Nyalakan suara'}
-            >
-              {soundOn ? <Volume2 size={18} className="text-zen-accent-dark" /> : <VolumeX size={18} className="text-zen-text/50" />}
-              <span>Suara {soundOn ? 'ON' : 'OFF'}</span>
-            </button>
           </div>
         </section>
 
@@ -195,8 +177,8 @@ export default function Landing() {
                 </div>
 
                 <div>
-                  <div className="flex items-center justify-between text-xs font-bold text-zen-text/70 mb-3 pt-4 border-t border-zen-border/60">
-                    <span>{level.id === 'kana' ? 'Dasar' : `${completedUnits} / 37 unit selesai`}</span>
+<div className="flex items-center justify-between text-xs font-bold text-zen-text/70 mb-3 pt-4 border-t border-zen-border/60">
+                      <span>{level.id === 'kana' ? 'Dasar' : `${completedUnits} / ${N5_TOTAL_UNITS} unit selesai`}</span>
                     <span className="text-zen-accent-dark group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
                       Mulai Belajar →
                     </span>

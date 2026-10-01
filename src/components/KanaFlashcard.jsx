@@ -36,6 +36,10 @@ export default function KanaFlashcard({ data }) {
 
   const current = data[index]
 
+  if (!data || !data.length || !current) {
+    return <div className="text-center py-12 text-zen-text">Data tidak tersedia</div>
+  }
+
   return (
     <div className="flex flex-col items-center">
       <div className="relative w-full max-w-md mb-6">

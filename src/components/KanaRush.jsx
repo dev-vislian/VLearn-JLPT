@@ -15,6 +15,7 @@ export default function KanaRush({ data }) {
   const [finished, setFinished] = useState(false)
   const [soundOn, setSoundOn] = useState(true)
   const inputRef = useRef(null)
+  const formRef = useRef(null)
   const advanceTimer = useRef(null)
 
   const current = deck[index]
@@ -35,6 +36,24 @@ export default function KanaRush({ data }) {
 
   useEffect(() => {
     inputRef.current?.focus()
+  }, [index, finished])
+
+  // Scroll input ke tengah layar supaya tidak tertutup keyboard virtual di HP.
+  useEffect(() => {
+    const el = formRef.current
+    if (!el || finished) return
+
+    const keepVisible = () => {
+      const rect = el.getBoundingClientRect()
+      const viewportH = window.visualViewport?.height ?? window.innerHeight
+      if (rect.bottom > viewportH - 12) {
+        el.scrollIntoView({ block: 'center', behavior: 'smooth' })
+      }
+    }
+
+    keepVisible()
+    window.visualViewport?.addEventListener('resize', keepVisible)
+    return () => window.visualViewport?.removeEventListener('resize', keepVisible)
   }, [index, finished])
 
   const handleRestart = () => {
@@ -199,18 +218,21 @@ export default function KanaRush({ data }) {
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="flex items-center gap-2 w-full max-w-sm">
+      <form ref={formRef} onSubmit={handleSubmit} className="flex items-center gap-2 w-full max-w-sm">
         <input
           ref={inputRef}
           type="text"
+          inputMode="text"
+          enterKeyHint="done"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           disabled={status !== 'idle'}
           placeholder={status === 'success' ? '✓ Benar!' : status === 'error' ? `✗ ${current?.romaji}` : 'Contoh: ka'}
           autoComplete="off"
           autoCorrect="off"
+          autoCapitalize="none"
           spellCheck={false}
-          className={`flex-1 px-4 py-3 rounded-xl border-2 bg-zen-card text-center text-lg font-semibold tracking-wider transition-all focus:outline-none ${
+          className={`flex-1 min-w-0 px-3 sm:px-4 py-3 rounded-xl border-2 bg-zen-card text-center text-lg font-semibold tracking-wider transition-all focus:outline-none ${
             status === 'success'
               ? 'border-zen-success text-zen-success'
               : status === 'error'
