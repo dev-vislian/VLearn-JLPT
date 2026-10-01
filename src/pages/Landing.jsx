@@ -25,6 +25,8 @@ export default function Landing() {
   const { progress } = useApp()
   const [soundOn, setSoundOn] = useState(isSoundEnabled())
 
+  console.log('Progress data:', progress)
+
   const getTotalProgressPercent = () => {
     let totalUnits = 37 // N5 has 5 kanji + 16 vocab + 16 grammar = 37 units total
     let completedTotal = 0
@@ -50,18 +52,26 @@ export default function Landing() {
   }
 
   const getLastActiveUnit = () => {
-    let lastFound = null
-    if (progress.n5) {
-      ['vocab', 'kanji', 'grammar'].forEach((mod) => {
-        if (!progress.n5[mod]) return
-        Object.entries(progress.n5[mod]).forEach(([uId, uData]) => {
-          if (!uData.completed && !lastFound) {
-            lastFound = { level: 'n5', mod, unitId: uId }
-          }
-        })
-      })
+    const moduleOrder = ['kanji', 'vocab', 'grammar']
+    const moduleFiles = {
+      kanji: 5,
+      vocab: 16,
+      grammar: 16
     }
-    return lastFound || { level: 'n5', mod: 'vocab', unitId: 'unit-1' }
+
+    if (progress.n5) {
+      for (const mod of moduleOrder) {
+        const totalUnits = moduleFiles[mod]
+        for (let i = 1; i <= totalUnits; i++) {
+          const uId = `unit-${i}`
+          if (!progress.n5[mod]?.[uId]?.completed) {
+            return { level: 'n5', mod, unitId: uId }
+          }
+        }
+      }
+    }
+    
+    return { level: 'n5', mod: 'kanji', unitId: 'unit-1' }
   }
 
   const totalPercent = getTotalProgressPercent()

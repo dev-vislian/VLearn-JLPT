@@ -16,6 +16,7 @@ export function isSoundEnabled() {
 export function setSoundEnabled(value) {
   enabled = value
   localStorage.setItem(STORAGE_KEY, JSON.stringify(value))
+  return enabled
 }
 
 export function toggleSound() {

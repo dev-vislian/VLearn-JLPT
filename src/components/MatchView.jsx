@@ -93,7 +93,7 @@ export default function MatchView({ data, module, showFurigana }) {
                       ? 'bg-zen-success/40 border-zen-success text-zen-text-dark/50'
                       : isSelected
                       ? 'bg-zen-accent/20 border-zen-accent text-zen-text-dark shadow-md'
-                      : 'bg-zen-bg border-zen-border text-zen-text-dark hover:border-zen-accent hover:shadow-md'
+                      : 'bg-zen-card border-zen-border text-zen-text-dark hover:border-zen-accent hover:shadow-md'
                   }`}
                 >
                   <div className="flex flex-col items-center gap-1">
@@ -130,7 +130,7 @@ export default function MatchView({ data, module, showFurigana }) {
                       ? 'bg-zen-success/40 border-zen-success text-zen-text-dark/50'
                       : isSelected
                       ? 'bg-zen-accent/20 border-zen-accent text-zen-text-dark shadow-md'
-                      : 'bg-zen-bg border-zen-border text-zen-text-dark hover:border-zen-accent hover:shadow-md'
+                      : 'bg-zen-card border-zen-border text-zen-text-dark hover:border-zen-accent hover:shadow-md'
                   }`}
                 >
                   <span className="font-medium text-base leading-snug">{item.meaning}</span>

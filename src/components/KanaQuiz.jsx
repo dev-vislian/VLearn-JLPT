@@ -63,7 +63,7 @@ export default function KanaQuiz({ data }) {
           <span>Skor: {score}</span>
         </div>
 
-        <div className="bg-zen-bg border border-zen-border rounded-xl p-8 flex flex-col items-center">
+        <div className="bg-zen-card border border-zen-border rounded-xl p-8 flex flex-col items-center">
           <button
             onClick={handleAudio}
             className="p-3 rounded-full border border-zen-border hover:border-zen-accent hover:bg-zen-accent/10 mb-4 transition-colors"
@@ -80,16 +80,16 @@ export default function KanaQuiz({ data }) {
             const isOptionCorrect = option.id === current.id
             const showResult = selectedAnswer && (isSelected || isOptionCorrect)
 
-            let buttonClass = 'p-4 rounded-lg font-medium transition-all '
-            if (isSelected && isCorrect === true) {
-              buttonClass += 'bg-zen-success text-white border-zen-success'
-            } else if (isSelected && isCorrect === false) {
-              buttonClass += 'bg-zen-error text-white border-zen-error'
-            } else if (showResult && isOptionCorrect) {
-              buttonClass += 'bg-zen-success text-white border-zen-success'
-            } else {
-              buttonClass += 'bg-zen-bg border border-zen-border text-zen-text-dark hover:border-zen-accent'
-            }
+             let buttonClass = 'p-4 rounded-lg font-medium transition-all border-2 '
+             if (isSelected && isCorrect === true) {
+               buttonClass += 'bg-zen-success text-white border-zen-success'
+             } else if (isSelected && isCorrect === false) {
+               buttonClass += 'bg-zen-error text-white border-zen-error'
+             } else if (showResult && isOptionCorrect) {
+               buttonClass += 'bg-zen-success text-white border-zen-success'
+             } else {
+               buttonClass += 'bg-zen-card border-zen-border text-zen-text-dark hover:border-zen-accent'
+             }
 
             return (
               <button

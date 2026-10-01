@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, BookOpen, Shuffle, HelpCircle, FileText, RotateCcw } from 'lucide-react'
+import { ArrowLeft, BookOpen, Shuffle, HelpCircle, FileText } from 'lucide-react'
 import { useApp } from '../contexts/AppContext.jsx'
 import { shuffleArray } from '../utils/helper.js'
 import { getUnitData } from '../data/registry.js'
@@ -36,7 +36,7 @@ export default function Unit() {
 }
 
 function UnitView({ level, module, unitId }) {
-  const { bookmarks, toggleBookmark, showFurigana, updateProgress, toggleFurigana, resetLevelProgress } = useApp()
+  const { bookmarks, toggleBookmark, showFurigana, updateProgress, toggleFurigana } = useApp()
   const [savedActivity, setSavedActivity] = useState(() => readSavedActivity(level, module, unitId))
 
   const unitData = getUnitData(level, module, unitId)
@@ -53,58 +53,28 @@ function UnitView({ level, module, unitId }) {
     updateProgress(level, module, unitId, { completed: true, completedAt: Date.now() })
   }
 
-  const handleResetLevel = () => {
-    if (window.confirm(`Reset semua progress di level ${level.toUpperCase()}?`)) {
-      resetLevelProgress(level)
-    }
-  }
-
-  const levelLabel = level.toUpperCase()
   const unitNumber = unitId?.replace('unit-', '')
 
   return (
     <div className="min-h-screen bg-zen-bg flex flex-col">
-      <div className="bg-zen-card border-b-2 border-zen-border shadow-sm sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <Link to={`/${level}/${module}`} className="p-2 rounded-xl hover:bg-zen-bg transition-colors">
-                <ArrowLeft size={20} className="text-zen-accent-dark" />
-              </Link>
-              <div>
-                <div className="flex items-center gap-1.5 text-xs font-medium text-zen-text mb-0.5">
-                  <Link to="/" className="hover:text-zen-accent transition-colors">Beranda</Link>
-                  <span>/</span>
-                  <Link to={`/${level}`} className="hover:text-zen-accent transition-colors">{levelLabel}</Link>
-                  <span>/</span>
-                  <Link to={`/${level}/${module}`} className="hover:text-zen-accent transition-colors">{moduleLabels[module]}</Link>
-                  <span>/</span>
-                  <span className="text-zen-text-dark">Unit {unitNumber}</span>
-                </div>
-                <h1 className="text-xl md:text-2xl font-bold text-zen-text-dark leading-tight">
-                  {levelLabel} / {moduleLabels[module]} / Unit {unitNumber}
-                </h1>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={toggleFurigana}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  showFurigana
-                    ? 'bg-zen-accent text-white'
-                    : 'bg-zen-card border border-zen-border text-zen-text-dark'
-                }`}
-              >
-                Furigana {showFurigana ? 'ON' : 'OFF'}
-              </button>
-              <button
-                onClick={handleResetLevel}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-zen-text border border-zen-border hover:border-zen-error hover:text-zen-error transition-all"
-              >
-                <RotateCcw size={16} />
-                Reset
-              </button>
-            </div>
+      <div className="px-4 pt-6 pb-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="inline-flex items-center gap-3 px-4 py-2.5 rounded-full bg-zen-card/80 backdrop-blur-sm border border-zen-border/50 shadow-sm">
+            <Link to={`/${level}/${module}`} className="flex items-center gap-2 text-sm font-medium text-zen-text hover:text-zen-accent-dark transition-colors">
+              <ArrowLeft size={16} />
+              Unit {unitNumber}
+            </Link>
+            <span className="w-px h-5 bg-zen-border/30" />
+            <button
+              onClick={toggleFurigana}
+              className={`text-sm font-medium transition-all ${
+                showFurigana
+                  ? 'text-zen-accent'
+                  : 'text-zen-text/60'
+              }`}
+            >
+              Furigana {showFurigana ? 'ON' : 'OFF'}
+            </button>
           </div>
         </div>
       </div>

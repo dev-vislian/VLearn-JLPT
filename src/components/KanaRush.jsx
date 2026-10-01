@@ -3,9 +3,10 @@ import { RotateCcw, Volume2 } from 'lucide-react'
 import { speak, shuffleArray } from '../utils/helper.js'
 import { playCorrect, playWrong, playTap } from '../utils/sound.js'
 
-const SLOT_WIDTH = 88
-
 export default function KanaRush({ data }) {
+  const [slotWidth, setSlotWidth] = useState(() =>
+    typeof window !== 'undefined' && window.innerWidth < 380 ? 64 : typeof window !== 'undefined' && window.innerWidth < 480 ? 72 : 88
+  )
   const [deck, setDeck] = useState(() => shuffleArray(data))
   const [index, setIndex] = useState(0)
   const [input, setInput] = useState('')
@@ -20,6 +21,16 @@ export default function KanaRush({ data }) {
 
   useEffect(() => {
     return () => clearTimeout(advanceTimer.current)
+  }, [])
+
+  useEffect(() => {
+    const handleResize = () => {
+      setSlotWidth(
+        window.innerWidth < 380 ? 64 : window.innerWidth < 480 ? 72 : 88
+      )
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   useEffect(() => {
@@ -89,8 +100,8 @@ export default function KanaRush({ data }) {
   if (!deck.length) return null
 
   const windowCount = Math.min(deck.length, 5)
-  const containerWidth = windowCount * SLOT_WIDTH
-  const centerOffset = containerWidth / 2 - SLOT_WIDTH / 2
+  const containerWidth = windowCount * slotWidth
+  const centerOffset = containerWidth / 2 - slotWidth / 2
   const borderColor =
     status === 'success' ? '#22c55e' : status === 'error' ? '#ef4444' : 'rgba(37,99,235,0.35)'
 
@@ -118,24 +129,24 @@ export default function KanaRush({ data }) {
         </div>
       </div>
 
-      <div className="relative mb-2" style={{ width: containerWidth, height: 210 }}>
+      <div className="relative mb-2 overflow-hidden" style={{ width: containerWidth, height: slotWidth > 80 ? 210 : 180 }}>
         <div
-          className="absolute top-0 bottom-0 rounded-2xl border-2 pointer-events-none transition-colors duration-300"
+          className="absolute top-0 bottom-0 rounded-2xl border-2 pointer-events-none transition-colors duration-300 z-10"
           style={{
             left: centerOffset,
-            width: SLOT_WIDTH,
+            width: slotWidth,
             borderColor,
             backgroundColor: status === 'success' ? 'rgba(34,197,94,0.08)' : status === 'error' ? 'rgba(239,68,68,0.08)' : 'rgba(37,99,235,0.05)',
             boxShadow: `0 0 30px ${status === 'success' ? 'rgba(34,197,94,0.15)' : status === 'error' ? 'rgba(239,68,68,0.15)' : 'rgba(37,99,235,0.08)'}`,
           }}
         />
 
-        <div className="absolute left-0 top-0 bottom-0 overflow-hidden" style={{ width: containerWidth }}>
+        <div className="absolute left-0 top-0 bottom-0" style={{ width: containerWidth }}>
           <div
             className="absolute left-0 top-1/2 flex"
             style={{
-              width: deck.length * SLOT_WIDTH,
-              transform: `translate(${centerOffset - index * SLOT_WIDTH}px, -50%)`,
+              width: deck.length * slotWidth,
+              transform: `translate(${centerOffset - index * slotWidth}px, -50%)`,
               transition: status === 'success' || status === 'error'
                 ? 'none'
                 : 'transform 500ms cubic-bezier(0.4, 0, 0.2, 1)',
@@ -148,7 +159,7 @@ export default function KanaRush({ data }) {
                 : dist === 0 ? 1 : dist === 1 ? 0.55 : dist === 2 ? 0.22 : 0.06
               const fontScale = dist === 0 ? 1 : dist === 1 ? 0.62 : dist === 2 ? 0.45 : 0.35
               return (
-                <div key={item.id} className="flex-none" style={{ width: SLOT_WIDTH, height: 160 }}>
+                <div key={item.id} className="flex-none" style={{ width: slotWidth, height: slotWidth > 80 ? 160 : 130 }}>
                   <span
                     className={`japanese-text font-bold select-none transition-all duration-500 ${
                       status === 'success' && dist === 0
@@ -164,7 +175,7 @@ export default function KanaRush({ data }) {
                       width: '100%',
                       height: '100%',
                       opacity,
-                      fontSize: `${fontScale * 64}px`,
+                      fontSize: `${fontScale * (slotWidth > 80 ? 64 : 52)}px`,
                       lineHeight: 1,
                     }}
                   >

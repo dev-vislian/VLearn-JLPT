@@ -73,7 +73,7 @@ export default function QuizView({ data, module, onComplete, showFurigana }) {
           <span>Skor: {score}</span>
         </div>
 
-        <div className="bg-zen-bg border border-zen-border rounded-xl p-8 mb-6 text-center">
+        <div className="bg-zen-card border border-zen-border rounded-xl p-8 mb-6 text-center">
           <div className="text-4xl font-medium text-zen-text-dark mb-4">
             {module === 'grammar' ? current.pattern : module === 'vocab' && !showFurigana ? current.character?.split('（')[0] : current.character}
           </div>
@@ -97,7 +97,7 @@ export default function QuizView({ data, module, onComplete, showFurigana }) {
             } else if (showResult && isOptionCorrect) {
               buttonClass += 'bg-zen-success text-white border-2 border-zen-success'
             } else {
-              buttonClass += 'bg-zen-bg border-2 border-zen-border text-zen-text-dark hover:border-zen-accent'
+              buttonClass += 'bg-zen-card border-2 border-zen-border text-zen-text-dark hover:border-zen-accent'
             }
 
             return (

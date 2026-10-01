@@ -99,10 +99,19 @@ export default function FlashcardView({ data, module }) {
                 </div>
               )}
 
-              {module === 'vocab' && (
-                <div className="space-y-2 text-left bg-zen-bg/80 p-4 rounded-2xl border border-zen-border mt-4">
+              {module === 'vocab' && current.example && (
+                <div className="space-y-3 text-left mt-4">
                   <div className="text-sm">
                     <span className="font-semibold text-zen-text">Romaji:</span> {current.romaji}
+                  </div>
+                  <div className="text-sm text-zen-text font-medium italic">
+                    "{current.example.sentence}"
+                  </div>
+                  <div className="text-xs text-zen-text/70">
+                    {current.example.romaji}
+                  </div>
+                  <div className="text-sm text-zen-accent-dark font-medium">
+                    {current.example.meaning}
                   </div>
                 </div>
               )}

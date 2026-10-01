@@ -8,6 +8,7 @@ const STORAGE_KEYS = {
   bookmarks: 'manabu_bookmarks',
   furigana: 'manabu_furigana',
   zenSettings: 'manabu_zen_settings',
+  theme: 'manabu_theme',
 }
 
 const DEFAULT_ZEN_SETTINGS = {
@@ -33,6 +34,11 @@ export function AppProvider({ children }) {
     const storedZenSettings = localStorage.getItem(STORAGE_KEYS.zenSettings)
     return storedZenSettings ? JSON.parse(storedZenSettings) : DEFAULT_ZEN_SETTINGS
   })
+  const [theme, setTheme] = useState(() => {
+    const storedTheme = localStorage.getItem(STORAGE_KEYS.theme)
+    if (storedTheme) return storedTheme
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  })
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.progress, JSON.stringify(progress))
@@ -45,6 +51,11 @@ export function AppProvider({ children }) {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.zenSettings, JSON.stringify(zenSettings))
   }, [zenSettings])
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem(STORAGE_KEYS.theme, theme)
+  }, [theme])
 
   const toggleBookmark = (itemId, itemData) => {
     setBookmarks((prev) => {
@@ -96,17 +107,23 @@ export function AppProvider({ children }) {
     })
   }
 
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))
+  }
+
   const value = {
     progress,
     bookmarks,
     showFurigana,
     zenSettings,
+    theme,
     toggleBookmark,
     updateProgress,
     resetLevelProgress,
     toggleZenMode,
     updateZenSettings,
     toggleFurigana,
+    toggleTheme,
   }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>
