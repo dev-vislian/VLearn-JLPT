@@ -13,6 +13,10 @@ dist-ssr
 dist-offline
 *.local
 
+# Audio belongs to someone else - keep it on this machine only.
+# Zen Mode synthesises its own ambient drone, so the build works without these.
+public/audio/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

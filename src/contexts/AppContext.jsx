@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState } from 'react'
+import { safeParse, ZEN_DURATION_LIMITS } from '../utils/storage.js'
 
 const AppContext = createContext()
 
@@ -12,18 +13,26 @@ const STORAGE_KEYS = {
 }
 
 const DEFAULT_ZEN_SETTINGS = {
-  enabled: false,
-  pomodoro: { focus: 25, break: 5, active: true },
-  playlist: 'lofi',
+  pomodoro: { focus: 25, break: 5 },
 }
 
-function safeParse(key, fallback) {
-  try {
-    const stored = localStorage.getItem(key)
-    return stored ? JSON.parse(stored) : fallback
-  } catch (e) {
-    console.warn(`Gagal parse ${key}, pakai nilai default:`, e)
-    return fallback
+function clamp(value, min, max) {
+  const num = Number(value)
+  if (!Number.isFinite(num)) return null
+  return Math.min(max, Math.max(min, num))
+}
+
+// Settings lama bisa punya bentuk rusak (NaN, di luar batas, atau field mati
+// yang sudah dihapus). Bersihkan di sini supaya timer tak pernah dapat 0 detik.
+function normalizeZenSettings(stored) {
+  const source = stored || {}
+  const pomodoro = source.pomodoro || {}
+
+  return {
+    pomodoro: {
+      focus: clamp(pomodoro.focus, ZEN_DURATION_LIMITS.focus.min, ZEN_DURATION_LIMITS.focus.max) ?? DEFAULT_ZEN_SETTINGS.pomodoro.focus,
+      break: clamp(pomodoro.break, ZEN_DURATION_LIMITS.break.min, ZEN_DURATION_LIMITS.break.max) ?? DEFAULT_ZEN_SETTINGS.pomodoro.break,
+    },
   }
 }
 
@@ -31,7 +40,9 @@ export function AppProvider({ children }) {
   const [progress, setProgress] = useState(() => safeParse(STORAGE_KEYS.progress, {}))
   const [bookmarks, setBookmarks] = useState(() => safeParse(STORAGE_KEYS.bookmarks, []))
   const [showFurigana, setShowFurigana] = useState(() => safeParse(STORAGE_KEYS.furigana, true))
-  const [zenSettings, setZenSettings] = useState(() => safeParse(STORAGE_KEYS.zenSettings, DEFAULT_ZEN_SETTINGS))
+  const [zenSettings, setZenSettings] = useState(() =>
+    normalizeZenSettings(safeParse(STORAGE_KEYS.zenSettings, DEFAULT_ZEN_SETTINGS))
+  )
   const [theme, setTheme] = useState(() => {
     const storedTheme = localStorage.getItem(STORAGE_KEYS.theme)
     if (storedTheme) return storedTheme
@@ -81,20 +92,14 @@ export function AppProvider({ children }) {
     }))
   }
 
-  const resetLevelProgress = (level) => {
-    setProgress((prev) => {
-      const updated = { ...prev }
-      delete updated[level]
-      return updated
-    })
-  }
-
-  const toggleZenMode = (enabled) => {
-    setZenSettings((prev) => ({ ...prev, enabled }))
-  }
-
   const updateZenSettings = (settings) => {
-    setZenSettings((prev) => ({ ...prev, ...settings }))
+    setZenSettings((prev) =>
+      normalizeZenSettings({
+        ...prev,
+        ...settings,
+        pomodoro: { ...prev.pomodoro, ...settings.pomodoro },
+      })
+    )
   }
 
   const toggleFurigana = () => {
@@ -117,8 +122,6 @@ export function AppProvider({ children }) {
     theme,
     toggleBookmark,
     updateProgress,
-    resetLevelProgress,
-    toggleZenMode,
     updateZenSettings,
     toggleFurigana,
     toggleTheme,

@@ -71,9 +71,9 @@ export default function MatchView({ data, module, showFurigana }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+      <div className="grid grid-cols-2 gap-3 sm:gap-8">
         <div>
-          <div className="text-xs font-semibold uppercase tracking-wider text-zen-text text-center mb-4">
+          <div className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-zen-text text-center mb-4">
             {module === 'grammar' ? 'Pola / Kategori' : 'Karakter / Kanji'}
           </div>
           <div className="space-y-3">

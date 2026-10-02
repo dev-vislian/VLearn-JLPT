@@ -21,11 +21,6 @@ export function setSoundEnabled(value) {
   return enabled
 }
 
-export function toggleSound() {
-  setSoundEnabled(!enabled)
-  return enabled
-}
-
 function getContext() {
   if (!enabled) return null
   if (!audioCtx) {
@@ -79,10 +74,4 @@ export function playComplete() {
 /** 板 - suara ketukan kayu, ganti halaman */
 export function playTap() {
   tone({ freq: 1500, duration: 0.05, type: 'square', gain: 0.015 })
-}
-
-/** 翻 - suara card翻, buka kartu */
-export function playFlip() {
-  tone({ freq: 600, duration: 0.07, type: 'triangle', gain: 0.03 })
-  tone({ freq: 900, duration: 0.06, type: 'triangle', gain: 0.02, delay: 0.04 })
 }

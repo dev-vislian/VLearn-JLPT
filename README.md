@@ -1,4 +1,4 @@
-#(VLearn JLPT)
+# VLearn JLPT
 
 Aplikasi belajar bahasa Jepang untuk persiapan JLPT. Saat ini berisi materi level **N5** dengan berbagai mode belajar yang interaktif.
 
@@ -15,7 +15,7 @@ Aplikasi belajar bahasa Jepang untuk persiapan JLPT. Saat ini berisi materi leve
   - **Cocokkan** — Pasangkan karakter dengan arti.
   - **Kuis** — Pilihan ganda dengan skor.
   - **Matome** — Latihan kontekstual berbasis kalimat.
-- **Zen Mode** — Timer pomodoro untuk sesi belajar fokus.
+- **Zen Mode** — Timer pomodoro untuk sesi belajar fokus, lengkap dengan musik latar lokal yang diputar acak tiap fase fokus dan otomatis hening saat istirahat. Widget mini timer tetap terlihat di navbar saat kamu berpindah halaman.
 - **Favorites** — Kumpulan item yang di-bookmark.
 - **Furigana toggle** — Tampilkan/sembunyikan furigana.
 - **Text-to-Speech** — Dengarkan pelafalan bahasa Jepang.

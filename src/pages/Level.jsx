@@ -2,47 +2,13 @@ import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, LayoutGrid, BookOpen, FileText } from 'lucide-react'
 import { useApp } from '../contexts/AppContext.jsx'
 import { getUnitCounts } from '../data/registry.js'
+import Enso from '../components/Enso.jsx'
 
 const modules = [
   { id: 'kanji', label: 'Kanji', icon: LayoutGrid },
   { id: 'vocab', label: 'Kosakata', icon: BookOpen },
   { id: 'grammar', label: 'Tata Bahasa', icon: FileText },
 ]
-
-const RADIUS = 26
-const CIRCUMFERENCE = 2 * Math.PI * RADIUS
-
-function Enso({ percent }) {
-  const dash = (percent / 100) * CIRCUMFERENCE
-  const isDone = percent >= 100
-
-  return (
-    <div className="relative w-16 h-16 flex-shrink-0">
-      <svg viewBox="0 0 64 64" className="w-full h-full -rotate-90">
-        <circle
-          cx="32" cy="32" r={RADIUS}
-          fill="none"
-          stroke="var(--zen-border)"
-          strokeWidth="4"
-          strokeLinecap="round"
-        />
-        <circle
-          cx="32" cy="32" r={RADIUS}
-          fill="none"
-          stroke="var(--zen-seal)"
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeDasharray={`${dash} ${CIRCUMFERENCE}`}
-          style={{ transition: 'stroke-dasharray 0.8s ease-out' }}
-        />
-      </svg>
-      <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-zen-text-dark">
-        {percent}%
-      </span>
-      {isDone && <span className="absolute -bottom-1 -right-1 text-sm" title="全部完了">✦</span>}
-    </div>
-  )
-}
 
 export default function Level() {
   const { level } = useParams()
